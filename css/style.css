@@ -1886,7 +1886,19 @@ body.dback-going .pager--detail { opacity: 0 !important; transition: opacity 0.3
      — 화면 바닥에서 90 (내용은 --ps 배율로 줄어 있으므로 나눠 둠) */
   .about__inner { padding-bottom: calc(90px / var(--ps, 1)); }
   .pager, .pager.pager--detail { top: auto; bottom: 30px; transform: none; }
-  .foot .foot__find { left: 30px; bottom: calc(103px * var(--dk, 1) + 30px); }
+  /* 푸터 Find me (Figma 333:8184): 화면 가득(좌우 30) 가로 배치 — Find me / Linked in · Instagram | X · Behance | Framer
+     (세 칸을 양 끝까지 벌리고 아래 줄 맞춤) · 자리는 AHYUN 30 위 고정 */
+  .foot .foot__find {
+    left: 30px; right: 30px; bottom: calc(103px * var(--dk, 1) + 30px);
+    display: grid; grid-template-columns: auto auto auto; justify-content: space-between; align-items: end;
+    row-gap: 10px; column-gap: 0;
+  }
+  .foot .foot__find > :nth-child(1) { grid-area: 1 / 1; }   /* Find me */
+  .foot .foot__find > :nth-child(2) { grid-area: 2 / 1; }   /* Linked in */
+  .foot .foot__find > :nth-child(3) { grid-area: 3 / 1; }   /* Instagram */
+  .foot .foot__find > :nth-child(4) { grid-area: 2 / 2; }   /* X */
+  .foot .foot__find > :nth-child(5) { grid-area: 3 / 2; }   /* Behance */
+  .foot .foot__find > :nth-child(6) { grid-area: 3 / 3; }   /* Framer */
 }
 
 /* ---------- 비밀번호로 잠근 프로젝트 (Figma 333:8060 loding page) — js/lock.js ----------

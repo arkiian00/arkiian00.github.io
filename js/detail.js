@@ -1207,6 +1207,8 @@
     const tail = detail.querySelector(".detail__tail");
     if (!group || !bar || !list || !tail) return;
     detail.appendChild(group);                 // 변형되는 프레임 밖으로 — 화면 위 고정이 깨지지 않게
+    // Next 목록에서 지금 보고 있는 상세 페이지의 카드는 숨김 (크기를 재기 전에 — 목록 · 물방울 높이가 남은 카드에 맞게)
+    for (const c of list.querySelectorAll("[data-project]")) c.style.display = c.dataset.project === detail.dataset.current ? "none" : "";
     const roll = bar.querySelector(".roll");
     const [oldW, newW] = roll.children;
     const warp = document.getElementById("warpDisp");
