@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portfolio</title>
+  <link rel="preload" href="fonts/PPWoodland-Ultralight.otf" as="font" type="font/otf" crossorigin />
+  <!-- 상세 페이지 본문 폰트 (Pretendard: 쓰는 글자만 받는 동적 서브셋, Inter) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" />
+  <link rel="stylesheet" href="css/shuttlefit.css?v=321" />
+  <link rel="stylesheet" href="css/style.css?v=368" />
+</head>
+<body>
+  <!-- WebGL 배경 (shadergradient 스타일 흐름 + 마우스 반응 글로우 + liquid glass 굴절) -->
+
+  <!-- Figma 187:278 Main page — max-width 1200, 가운데 정렬 -->
+  <!-- Figma 187:278 "Scroll down" — 첫 Hello 화면 안내, 화면(viewport) 바닥에서 30 위 가운데 고정 (호버 → 스크롤 동작으로 바뀔 예정) -->
+  <!-- Figma 292:6730 Side bar — 뷰포트 왼쪽 아래 고정 (왼쪽 40 · 아래 30), 더 스크롤하면 스미듯 나타남 (js/hero.js)
+       각 링크(Frame 148)에 호버하면 AHYUN 처럼 물방울 글자가 스며 오름 (js/drip.js) -->
+  <div class="hero-find" id="heroFind">
+    <p>Find me</p>
+    <a class="drip" href="https://www.linkedin.com/in/arkiian0" target="_blank" rel="noopener noreferrer">Linked in</a>
+    <a class="drip" href="https://www.instagram.com/arki_ian_0/" target="_blank" rel="noopener noreferrer">Instagram</a>
+    <a class="drip" href="https://x.com/arki_ian_0" target="_blank" rel="noopener noreferrer">X</a>
+    <a class="drip" href="https://www.behance.net/arikian0" target="_blank" rel="noopener noreferrer">Behance</a>
+    <a class="drip" href="https://www.framer.com/@ian-lee-0bobh/" target="_blank" rel="noopener noreferrer">Framer</a>
+  </div>
+  <!-- Figma 292:6742 About — 프로젝트에서 더 스크롤하면 한 덩어리씩 스며 나옴 (js/about.js). 위 바는 프로젝트 바가 About 으로 굴러 바뀜 -->
+  <section class="about" id="about" hidden aria-label="About">
+    <div class="about__col">
+      <div class="about__inner">
+        <div class="about__intro">
+          <h2 class="about__title" data-seep>Hi I’m Ahhyun<br>Call me<span class="lia" id="lia"><span class="lia__text"> LIa </span><img class="lia__drop" id="liaDrop" src="assets/about-lia.svg" alt="" aria-hidden="true" width="78.29" height="54.36"></span>:)</h2>
+          <!-- Figma 296:7226 LIa — 스크롤하면 글자 LIa 가 물방울 글자로 바뀜 (js/about.js) -->
+          <p class="about__text" data-seep>Working <span class="drip drip--inline" data-drip-scroll>flexibly</span> across branding, interaction, and design engineering, I adapt my tools and methods to <span class="drip drip--inline" data-drip-scroll>solve the problem</span> at hand. From developing graphic concepts to prototyping with code, I bridge visual sensibility and technical logic to craft digital experiences that <span class="drip drip--inline" data-drip-scroll>feel natural</span> to users.</p>
+        </div>
+        <!-- Figma 320:7821 · 320:7802 — 동료 피드백 카드 4장 (60 씩 겹친 묶음): 제목 20 아래에서 아래 카드부터 하나씩 자기 자리로 떨어지며 덜커덩 꿀렁 뭉침
+             · 겹친 뒤는 서리 유리(흐림 20)로 가려짐 · 호버하면 그 카드가 맨 위로 커지며 밝은 테두리 · 빛 (js/about.js · CSS .fb__card) -->
+        <h3 class="about__h about__h--fb" data-seep>My Colleagues Say...</h3>
+        <div class="about__fb">
+            <div class="fb" style="width:350.993px; height:91.849px;" data-seep><div class="fb__card fb--l" style="width:350.503px; transform: rotate(-1.47deg) skewX(-1.05deg) translateZ(0);"><p>Despite facing many unfamiliar tasks, she demonstrates remarkable initiative and executes quickly without hesitation.</p></div></div>
+            <div class="fb" style="width:367.055px; height:135.591px;" data-seep><div class="fb__card" style="width:356.8px; transform: rotate(6.19deg) skewX(-1.05deg) translateZ(0);"><p>Even as a junior team member, she quickly understands the company&#39;s goals and challenges, proposes constructive solutions, and actively shares her ideas with colleagues to foster collective growth.</p></div></div>
+            <div class="fb" style="width:407.423px; height:142.211px;" data-seep><div class="fb__card" style="width:402.451px; transform: rotate(-4.06deg) skewX(-1.05deg) translateZ(0);"><p>Even during the busiest moments, she always greets everyone with a warm smile and brings positive energy to the team. Her approachable nature makes communication effortless, and working with her always feels reassuring and supportive.</p></div></div>
+            <div class="fb" style="width:356.192px; height:102.749px;" data-seep><div class="fb__card" style="width:350.503px; transform: rotate(3.29deg) skewX(-1.05deg) translateZ(0);"><p>Thank you for always communicating so promptly and thoughtfully. Your support has been incredibly helpful in preparing for our shoots!</p></div></div>
+        </div>
+        <div class="about__careers" data-seep>  <!-- Careers 는 제목·사진·경력 목록이 한 번에 같이 스며 나옴 -->
+          <h3 class="about__h">Careers</h3>
+          <!-- Figma 316:7622 · 320:7677 — 유리 액자 속 사진 (경력 줄에 호버하면 그 경력 사진으로 바뀜, 사진 가장자리는 흐리게) -->
+          <div class="about__photo-box">
+            <div class="about__shot" id="careerShot" style="width:264px; height:212px;">
+              <!-- 겹 둘을 번갈아 씀 (교차 전환). 한 겹 = 사진 한 장 — 둥근 모서리(40)를 따라 가장자리가 투명도 0 으로 번지는 SVG 마스크 (js/about.js) -->
+              <span class="about__layer is-on"><img class="about__img" src="assets/careers/framer.webp" alt="Framer Market 작업" decoding="async"></span>
+              <span class="about__layer"><img class="about__img" alt="" decoding="async"></span>
+            </div>
+          </div>
+          <ul class="about__list">
+            <li data-drip-hover data-shot="framer"><span class="drip drip--inline">Framer Market</span><span class="drip drip--inline">2026</span></li>
+            <li data-drip-hover data-shot="uniquegood"><span class="drip drip--inline">Uniquegood Company</span><span class="drip drip--inline">2025-2026</span></li>
+            <li data-drip-hover data-shot="rockly"><span class="drip drip--inline">RocklyAlive</span><span class="drip drip--inline">2024-2025</span></li>
+            <li data-drip-hover data-shot="kbs"><span class="drip drip--inline">Korea Broadcast Art Center</span><span class="drip drip--inline">2024-2025</span></li>
+            <li data-drip-hover data-shot="freelancer"><span class="drip drip--inline">Freelancer illustrator</span><span class="drip drip--inline">2023-2024</span></li>
+            <li data-drip-hover data-shot="graphic"><span class="drip drip--inline">Graphic Tshirt Brand</span><span class="drip drip--inline">2023</span></li>
+            <li data-drip-hover data-shot="mlb"><span class="drip drip--inline">F&amp;F MLB(Korea Fashion Marketing)</span><span class="drip drip--inline">2022-2023</span></li>
+            <li data-drip-hover data-shot="luxury"><span class="drip drip--inline">Luxury Fashion Grapic</span><span class="drip drip--inline">2022</span></li>
+            <li data-drip-hover data-shot="ever"><span class="drip drip--inline">Ever&amp;Ever</span><span class="drip drip--inline">2021</span></li>
+            <li data-drip-hover data-shot="graduation"><span class="drip drip--inline">Konkuk University Graduation</span><span class="drip drip--inline">2021</span></li>
+          </ul>
+        </div>
+        <!-- Figma 333:7975 About-M · Frame 191 — 화면 폭 462 이하: 왼쪽 Find me 사이드바 대신 Careers 아래에서 (마지막에 스며 나옴) -->
+        <div class="about__find" data-seep>
+          <p>Find me</p>
+          <a class="drip" href="https://www.linkedin.com/in/arkiian0" target="_blank" rel="noopener noreferrer">Linked in</a>
+          <a class="drip" href="https://www.instagram.com/arki_ian_0/" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a class="drip" href="https://x.com/arki_ian_0" target="_blank" rel="noopener noreferrer">X</a>
+          <a class="drip" href="https://www.behance.net/arikian0" target="_blank" rel="noopener noreferrer">Behance</a>
+          <a class="drip" href="https://www.framer.com/@ian-lee-0bobh/" target="_blank" rel="noopener noreferrer">Framer</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Figma 303:7250 페이지 표시 — 왼쪽 30 · 화면 세로 가운데 고정 (js/hero.js) -->
+  <nav class="pager" id="pager" aria-label="페이지">
+    <button class="pager__item" type="button" data-page="hello" aria-label="Hello"><span class="pager__dot"></span><span class="pager__drop"></span></button>
+    <button class="pager__item" type="button" data-page="project" aria-label="Project"><span class="pager__dot"></span><span class="pager__drop"></span></button>
+    <button class="pager__item" type="button" data-page="about" aria-label="About"><span class="pager__dot"></span><span class="pager__drop"></span></button>
+  </nav>
+  <!-- Figma 122:933 Frame 186 — 상세 페이지 페이지 표시 (Overview · Strategy · Execution), 표지를 지나면 왼쪽 30 · 세로 가운데에 나타남 (js/detail.js) -->
+  <nav class="pager pager--detail" id="dpager" aria-label="섹션" hidden>
+    <button class="pager__item" type="button" data-sec="0" aria-label="Overview"><span class="pager__dot"></span><span class="pager__drop"></span></button>
+    <button class="pager__item" type="button" data-sec="1" aria-label="Strategy"><span class="pager__dot"></span><span class="pager__drop"></span></button>
+    <button class="pager__item" type="button" data-sec="2" aria-label="Execution"><span class="pager__dot"></span><span class="pager__drop"></span></button>
+  </nav>
+  <p class="scroll-hint" id="scrollHint" aria-hidden="true" data-float data-float-speed="1.6" data-liquid data-liquid-speed="1" data-liquid-scale="3" data-liquid-frequency="0.045"><span class="drip drip--inline" data-drip-static>Scroll down</span></p>
+  <main class="frame">
+    <!-- 1200×800 스테이지, 1200 미만에서는 비율 유지 축소 -->
+    <div class="stage-fit">
+      <div class="stage" id="stage">
+        <!-- Figma 97:827 / 97:842 / 97:845 "AHYUN" — Hello 바가 H의 가로획
+             metaball: 글자(단일 path) + 커서 방울 + 줄기 구슬(div)을 한 래퍼에 넣고
+             래퍼에만 #goo 필터를 1번 적용 (글자 영역 + 여백 80px) -->
+        <!-- 히어로 내용(Hello, I’m · AHYUN · Crafting): 402 폭 그대로, 화면이 462 보다 좁을 때만 비율 축소 (js/hero.js --nk) -->
+        <div class="hero-group" id="heroGroup">
+        <div class="goo" id="goo" aria-label="AHYUN" role="img">
+          <svg class="name" id="name" viewBox="0 0 1191.25 216.875" overflow="visible" aria-hidden="true">
+            <defs>
+            <!-- 위에서 본 수면 아래: 물결 굴절 + 깊이 블러 -->
+            <filter id="liquid" x="-20" y="-40" width="1240" height="300" filterUnits="userSpaceOnUse">
+              <feTurbulence id="liquidNoise" type="fractalNoise" baseFrequency="0.014 0.02" numOctaves="2" seed="4" result="noise"/>
+              <feDisplacementMap id="liquidDisp" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G" result="warp"/>
+              <feGaussianBlur id="liquidBlur" in="warp" stdDeviation="0"/>
+            </filter>
+            <!-- portfoilo (HTML) 용 -->
+            <filter id="liquidText" x="-20%" y="-40%" width="140%" height="180%">
+              <feTurbulence id="textNoise" type="fractalNoise" baseFrequency="0.02 0.03" numOctaves="2" seed="9" result="noise"/>
+              <feDisplacementMap id="textDisp" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <!-- gooey: 수면/방울 경계를 몽글하게 -->
+            <filter id="riseGoo" x="-20" y="-60" width="1240" height="340" filterUnits="userSpaceOnUse">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="7"/>
+              <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"/>
+            </filter>
+            <mask id="rise" maskUnits="userSpaceOnUse" x="-20" y="-60" width="1240" height="340">
+              <g id="riseLayer" filter="url(#riseGoo)"></g>
+            </mask>
+            </defs>
+            <g mask="url(#rise)">
+              <g filter="url(#liquid)">
+                <!-- 근접·두께 판정용 (보이지 않음) -->
+                <path id="glyph" fill="none" d="M136.681 144.013H46.4597L25.4839 201.065H3.75L80.3242 2.12092H103.322L179.896 201.065H157.656L136.681 144.013ZM91.6966 20.8104L53.7886 124.586H129.605L91.6966 20.8104ZM205.58 2.125h20.162v198.944h-20.162ZM614.42 2.125h20.162v198.944h-20.162ZM780.205 2.12093H804.214L735.979 120.651V201.311H715.256V120.651L647.022 2.12093H670.777L725.618 97.0437L780.205 2.12093ZM954.171 127.537V1.875H975.147V123.848C975.147 151.883 965.291 205 894.529 205C824.02 205 814.164 151.883 814.164 123.848V1.875H834.887V127.537C834.887 162.949 854.852 184.835 894.529 184.835C934.459 184.835 954.171 162.703 954.171 127.537ZM1152.44 201.065L1089.94 113.151L1021.03 25.2368V201.065H1000.3V2.12093H1029.37L1160.53 177.949V2.12093H1181.25V201.065H1152.44Z"/>
+                <!-- 보이는 글자: 글자별로 커서 쪽으로 말랑하게 끌려감 -->
+                <g id="letters" fill="#fff">
+                  <path id="lt0" class="lt" d="M136.681 144.013H46.4597L25.4839 201.065H3.75L80.3242 2.12092H103.322L179.896 201.065H157.656L136.681 144.013ZM91.6966 20.8104L53.7886 124.586H129.605L91.6966 20.8104Z"/>
+                  <path id="lt1" class="lt" d="M205.58 2.125h20.162v198.944h-20.162Z"/>
+                  <path id="lt2" class="lt" d="M614.42 2.125h20.162v198.944h-20.162Z"/>
+                  <path id="lt3" class="lt" d="M780.205 2.12093H804.214L735.979 120.651V201.311H715.256V120.651L647.022 2.12093H670.777L725.618 97.0437L780.205 2.12093Z"/>
+                  <path id="lt4" class="lt" d="M954.171 127.537V1.875H975.147V123.848C975.147 151.883 965.291 205 894.529 205C824.02 205 814.164 151.883 814.164 123.848V1.875H834.887V127.537C834.887 162.949 854.852 184.835 894.529 184.835C934.459 184.835 954.171 162.703 954.171 127.537Z"/>
+                  <path id="lt5" class="lt" d="M1152.44 201.065L1089.94 113.151L1021.03 25.2368V201.065H1000.3V2.12093H1029.37L1160.53 177.949V2.12093H1181.25V201.065H1152.44Z"/>
+                </g>
+              </g>
+            </g>
+          </svg>
+          <!-- 당김 방울: 글자 안쪽에 숨어 있다가 커서 쪽으로 빠져나옴 (글자 자체는 고정) -->
+          <div class="goo__blob" id="gooPull"></div>
+          <!-- 커서 방울 (20px) -->
+          <div class="goo__blob" id="gooDrop"></div>
+        </div>
+
+        <p class="hero-hi" id="heroHi" aria-hidden="true">Hello, I’m</p>
+        <!-- Figma 187:289 — 더 스크롤하면 스미듯 나타남 -->
+        <!-- Figma 187:289 Frame 181 — 네 줄, 간격 10 · 스크롤하면 한 줄씩 스며 나옴 -->
+        <div class="hero-craft" id="heroCraft">
+          <p>Crafting</p>
+          <p>Design Engineering</p>
+          <p>Branding</p>
+          <p>Interaction</p>
+        </div>
+        </div>
+
+        <nav class="nav glass" id="nav" data-glass data-cursor="click">
+          <span class="nav__spec" aria-hidden="true"></span>
+          <p class="nav__label">Hello</p>
+        </nav>
+
+        <!-- Figma 187:290 — Hello 클릭 시 위 Project / 아래 About 로 물방울처럼 분리 -->
+        <div class="split" id="split" hidden>
+          <!-- 분리되는 동안의 액체 몸체 (gooey 필터로 목이 이어졌다 끊어짐) -->
+          <div class="split__goo" aria-hidden="true">
+            <div class="split__blob" id="blobTop"></div>
+            <div class="split__neck" id="blobNeck"></div>
+            <div class="split__neck" id="tailTop"></div>
+            <div class="split__neck" id="tailBottom"></div>
+            <div class="split__blob" id="blobBottom"></div>
+          </div>
+          <a class="bar glass is-liquid" id="barTop" href="#project" data-glass data-cursor="click">
+            <span class="bar__label">
+              <span class="roll" data-dir="-1"><span class="roll__w roll__old">Hello</span><span class="roll__w roll__new">Project</span></span>
+            </span>
+          </a>
+          <a class="bar glass is-liquid" id="barBottom" href="#about" data-glass data-cursor="click">
+            <span class="bar__label">
+              <span class="roll" data-dir="1"><span class="roll__w roll__old">Hello</span><span class="roll__w roll__new">About</span></span>
+            </span>
+          </a>
+        </div>
+
+        <!-- Figma 97:828 -->
+        <div class="float" id="float">
+          <p class="float__text" id="floatText">portfoilo</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Figma 187:520 → 187:308 — Project 클릭: 가운데로 커졌다가 위로 올라가고 목록이 물방울처럼 떨어짐 -->
+  <!-- 화면 맨 위 가운데에 고정 (디자인 영역 축소와 무관), 폭 300~360px -->
+  <div class="proj" id="proj" hidden>
+    <div class="proj__col">
+      <!-- 목록이 떨어지는 동안의 액체 몸체: 바·패널·목이 메타볼처럼 붙었다 떨어짐 -->
+      <div class="proj__goo" aria-hidden="true">
+        <div class="proj__blob proj__blob--bar" id="pBlobBar"></div>
+        <div class="proj__neck" id="pBlobNeck"></div>
+        <div class="proj__blob proj__blob--list" id="pBlobList"></div>
+        <div class="proj__blob proj__blob--menu" id="pBlobAbout"></div>
+        <div class="proj__blob proj__blob--menu proj__blob--home" id="pBlobHome"></div>
+        <div class="proj__neck" id="pBlobNeck2"></div>
+        <div class="proj__neck" id="pTail1a"></div>
+        <div class="proj__neck" id="pTail1b"></div>
+        <div class="proj__neck" id="pTail2a"></div>
+        <div class="proj__neck" id="pTail2b"></div>
+      </div>
+      <a class="pbar glass" id="pbar" href="#project" data-glass>
+        <span class="pbar__label">Project</span>
+      </a>
+      <!-- Figma 33:737 — Project 를 누르면 목록 대신 About · Home 이 물방울처럼 차례로 떨어져 나옴 (간격 12px) -->
+      <a class="pbar pmenu glass" id="pabout" href="#about" data-glass data-cursor="click" data-label="About">
+        <span class="pbar__label"><span class="roll" data-dir="1"><span class="roll__w roll__old">Project</span><span class="roll__w roll__new">About</span></span></span>
+      </a>
+      <a class="pbar pmenu pmenu--home glass" id="phome" href="./" data-glass data-cursor="click" data-label="Home" data-roll-next="Hello">
+        <span class="pbar__label"><span class="roll" data-dir="1"><span class="roll__w roll__old">Home</span><span class="roll__w roll__new">Hello</span></span></span>
+      </a>
+      <!-- Figma 187:308 — 카드: 이름 · 분류 (2px 점), 5개 -->
+      <div class="plist glass" id="plist" data-glass>
+        <a class="pcard pcard--wello" data-project="wello" href="#wello" data-cursor="view">
+          <span class="pcard__inner">
+            <span class="pcard__bg"><img class="pcard__img" src="assets/card-wello.png" alt="" loading="lazy" /><span class="pcard__grad"></span></span>
+            <span class="pcard__title">Wellow</span>
+            <span class="pcard__dot" aria-hidden="true"></span>
+            <span class="pcard__cat">UXUI</span>
+          </span>
+        </a>
+        <a class="pcard pcard--framer" data-project="framer" href="#framer" data-cursor="view">
+          <span class="pcard__inner">
+            <span class="pcard__bg"><img class="pcard__img" src="assets/card-framer.png" alt="" loading="lazy" /><span class="pcard__grad"></span></span>
+            <span class="pcard__title">Framer</span>
+            <span class="pcard__dot" aria-hidden="true"></span>
+            <span class="pcard__cat">UI/Interaction</span>
+          </span>
+        </a>
+        <a class="pcard pcard--northface" data-project="northface" href="#northface" data-cursor="view">
+          <span class="pcard__inner">
+            <span class="pcard__bg"><img class="pcard__img" src="assets/card-northface.jpg" alt="" loading="lazy" /><span class="pcard__grad"></span></span>
+            <span class="pcard__title">The North Face<br />Rebranding</span>
+            <span class="pcard__dot" aria-hidden="true"></span>
+            <span class="pcard__cat">Branding</span>
+          </span>
+        </a>
+        <a class="pcard pcard--shuttlefit" data-project="shuttlefit" href="#shuttlefit" data-cursor="view">
+          <span class="pcard__inner">
+            <span class="pcard__bg"><img class="pcard__img" src="assets/card-shuttlefit.jpg" alt="" loading="lazy" /><span class="pcard__grad"></span></span>
+            <span class="pcard__title">ShuttleFIT</span>
+            <span class="pcard__dot" aria-hidden="true"></span>
+            <span class="pcard__cat">Branding</span>
+          </span>
+        </a>
+        <a class="pcard pcard--realworld" data-project="realworld" href="#realworld" data-cursor="view">
+          <span class="pcard__inner">
+            <span class="pcard__bg"><img class="pcard__img" src="assets/card-realworld.jpg" alt="" loading="lazy" /><span class="pcard__grad"></span></span>
+            <span class="pcard__title">RealWorld x<br />Catch Teenieping</span>
+            <span class="pcard__dot" aria-hidden="true"></span>
+            <span class="pcard__cat">Graphic</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Figma 191:602 로딩 화면 — 누른 화면의 위 바(Project / Next)가 가운데로 내려오며 글자가 프로젝트 이름으로 왜곡 회전,
+       바탕이 프로젝트 대표 색으로 번진 뒤 바가 다시 위로 올라가며 상세 페이지 표지가 드러남 (js/detail.js) -->
+  <div class="load" id="load" hidden aria-hidden="true">
+    <div class="load__fill"></div>
+    <div class="load__bar"><span class="load__label"></span></div>
+  </div>
+
+  <!-- Figma 122:933 상세 페이지 (shuttlefit.html 을 불러와 넣음) — 배경색만 전체 폭, 내용은 1200 -->
+  <div class="detail" id="detail" hidden></div>
+  <!-- Figma 256:4453 foot bar — 상세 페이지 끝: Next·목록이 나올 때 함께 위에서 내려오는 올리브 프레임(아래 radius 40)
+       AHYUN(H 가로획 포함)은 처음 화면과 같은 등장 모션·메타볼 호버 (intro.js 가 #goo 를 복제해 #footAhyun 에 넣음), 가로획은 목록 호버 때 일렁임 -->
+  <div class="foot" id="foot" hidden aria-hidden="true">
+    <div class="foot__frame" id="footFrame"></div>
+    <!-- Figma 256:4562: AHYUN 은 처음 화면(히어로)과 같은 크기(396 폭) · 같은 떠오름 모션 — 목록이 나올 때 같이, 화면 바닥 위 30 가운데 -->
+    <div class="foot__ahyun" id="footAhyun"></div>
+    <!-- Find me 사이드 바: 히어로와 같은 고정 자리(왼쪽 40 · 아래 30) · 같은 스며 오름 — AHYUN 과 동시에 (js/detail.js) -->
+    <div class="hero-find foot__find" id="footFind">
+      <p>Find me</p>
+      <a class="drip" href="https://www.linkedin.com/in/arkiian0" target="_blank" rel="noopener noreferrer">Linked in</a>
+      <a class="drip" href="https://www.instagram.com/arki_ian_0/" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a class="drip" href="https://x.com/arki_ian_0" target="_blank" rel="noopener noreferrer">X</a>
+      <a class="drip" href="https://www.behance.net/arikian0" target="_blank" rel="noopener noreferrer">Behance</a>
+      <a class="drip" href="https://www.framer.com/@ian-lee-0bobh/" target="_blank" rel="noopener noreferrer">Framer</a>
+    </div>
+  </div>
+  <!-- 상세 페이지: 위 Project/Next 바를 누르면 About · Home 이 아래에 차례로 나타남 (Figma 33:737) -->
+  <div class="dmenu" id="dmenu" hidden>
+    <!-- 위 Project/Next 바 아래로 About · Home 이 물방울처럼 떨어지는 동안의 액체 몸체 -->
+    <div class="proj__goo dmenu__goo" aria-hidden="true">
+      <div class="proj__blob proj__blob--bar" id="dBlobBar"></div>
+      <div class="proj__blob proj__blob--menu" id="dBlobProj"></div>
+      <div class="proj__blob proj__blob--menu" id="dBlobAbout"></div>
+      <div class="proj__blob proj__blob--menu proj__blob--home" id="dBlobHome"></div>
+      <div class="proj__neck" id="dBlobNeck1"></div>
+      <div class="proj__neck" id="dBlobNeck2"></div>
+      <div class="proj__neck" id="dTail1a"></div>
+      <div class="proj__neck" id="dTail1b"></div>
+      <div class="proj__neck" id="dTail2a"></div>
+      <div class="proj__neck" id="dTail2b"></div>
+      <div class="proj__neck" id="dBlobNeck3"></div>
+      <div class="proj__neck" id="dTail3a"></div>
+      <div class="proj__neck" id="dTail3b"></div>
+    </div>
+    <!-- 위 바(프로젝트 이름 / Next) 와 About 사이, 프로젝트 목록으로 -->
+    <a class="pbar pmenu glass" id="dproj" href="#project" data-cursor="click" data-label="Project">
+      <span class="pbar__label"><span class="roll" data-dir="1"><span class="roll__w roll__old">Project</span><span class="roll__w roll__new">Project</span></span></span>
+    </a>
+    <a class="pbar pmenu glass" id="dabout" href="#about" data-cursor="click" data-label="About">
+      <span class="pbar__label"><span class="roll" data-dir="1"><span class="roll__w roll__old">Project</span><span class="roll__w roll__new">About</span></span></span>
+    </a>
+    <a class="pbar pmenu pmenu--home glass" id="dhome" href="./" data-cursor="click" data-label="Home" data-roll-next="Hello">
+      <span class="pbar__label"><span class="roll" data-dir="1"><span class="roll__w roll__old">Home</span><span class="roll__w roll__new">Hello</span></span></span>
+    </a>
+  </div>
+
+  <!-- metaball(gooey) 필터: 블러로 장을 합치고 → 색 지정 → 알파 임계값 (#F4F0E8, 60%)
+       + Figma P-1 드롭 섀도·안쪽 그림자 (밝은 글로우 위에서도 글자 윤곽이 보이도록) -->
+  <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <!-- 컴포넌트 빛 물결: 테두리 빛·물결무늬를 액체처럼 일렁이게 굴절 (작은 요소에만 적용) -->
+    <filter id="rimWave" x="-20%" y="-60%" width="140%" height="220%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022 0.05" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <!-- 상세 페이지 되돌아가기 방울: 메인 바 배경 + 원형 물방울 배경을 끈적하게 잇는 Gooey (흐림 10 → 알파 문턱 22 −9)
+         → 바와 같은 유리 음영(채움 #F4F0E8 20% · multiply 그림자 · 노란 안쪽 그림자) -->
+    <!-- 되돌아가기 방울 Gooey: 같은 단색 불투명 모양 둘(바 · 물방울)만 — 흐림 12 → 알파 25 −10 -->
+    <filter id="gooey-effect" x="-20%" y="-60%" width="140%" height="220%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -10" result="goo"/>
+    </filter>
+    <filter id="dbackGoo" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo"/>
+      <feColorMatrix in="goo" type="matrix" values="0 0 0 0 0.957  0 0 0 0 0.941  0 0 0 0 0.910  0 0 0 0.2 0" result="body"/>
+      <feColorMatrix in="goo" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="solid"/>
+      <feOffset in="solid" dx="5" dy="8"/>
+      <feGaussianBlur stdDeviation="4"/>
+      <feComposite in2="solid" operator="out" result="dropA"/>
+      <feFlood style="flood-color: rgb(var(--shadow-mul))" flood-opacity="0.5"/>
+      <feComposite in2="dropA" operator="in" result="drop"/>
+      <feOffset in="solid" dx="2" dy="3"/>
+      <feGaussianBlur stdDeviation="3.5"/>
+      <feComposite in2="solid" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.961  0 0 0 0 0.709  0 0 0 0.5 0"/>
+      <feBlend mode="screen" in2="body" result="shaded"/>
+      <feMerge><feMergeNode in="drop"/><feMergeNode in="shaded"/></feMerge>
+    </filter>
+    <filter id="gooFilter" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.957  0 0 0 0 0.941  0 0 0 0 0.910  0 0 0 1 0"/>
+      <feComponentTransfer result="body">
+        <feFuncA type="table" tableValues="0 0 0 0 0 0 0 0 0 0 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2"/>
+      </feComponentTransfer>
+      <feColorMatrix in="body" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 5 0" result="solid"/>
+      <!-- drop shadow 3.125/5/2.5 #C1C1C1 50% -->
+      <feOffset in="solid" dx="3.125" dy="5"/>
+      <feGaussianBlur stdDeviation="2.5"/>
+      <feComposite in2="solid" operator="out" result="dropA"/>
+      <!-- Multiply: 배경 × #C1C1C1 색 (CSS 변수, 페이지 배경 따라 바뀜) -->
+      <feFlood style="flood-color: rgb(var(--shadow-mul))" flood-opacity="0.5"/>
+      <feComposite in2="dropA" operator="in" result="drop"/>
+      <!-- inner shadow 1.25/1.875/2.19 #FFF5B5 50% -->
+      <feOffset in="solid" dx="1.25" dy="1.875"/>
+      <feGaussianBlur stdDeviation="2.19"/>
+      <feComposite in2="solid" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.961  0 0 0 0 0.709  0 0 0 0.5 0"/>
+      <feBlend mode="screen" in2="body" result="shaded"/>
+      <feMerge>
+        <feMergeNode in="drop"/>
+        <feMergeNode in="shaded"/>
+      </feMerge>
+    </filter>
+    <!-- AHYUN 전용 메타볼 필터 (Figma 187:278): 글자 유리 채움 · Multiply 그림자 · 안쪽 빛 (커서 글로우는 없음 — intro.js 의 iri 는 빛 노드가 없으면 쉼) -->
+    <filter id="ahyunGoo" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.957  0 0 0 0 0.941  0 0 0 0 0.910  0 0 0 1 0"/>
+      <feComponentTransfer result="body">
+        <feFuncA type="table" tableValues="0 0 0 0 0 0 0 0 0 0 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2"/>
+      </feComponentTransfer>
+      <feColorMatrix in="body" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 5 0" result="solid"/>
+      <feOffset in="solid" dx="3.125" dy="5"/>
+      <feGaussianBlur stdDeviation="2.5"/>
+      <feComposite in2="solid" operator="out" result="dropA"/>
+      <!-- Multiply: 배경 × #C1C1C1 색 (CSS 변수, 페이지 배경 따라 바뀜) -->
+      <feFlood style="flood-color: rgb(var(--shadow-mul))" flood-opacity="0.5"/>
+      <feComposite in2="dropA" operator="in" result="drop"/>
+      <feOffset in="solid" dx="1.25" dy="1.875"/>
+      <feGaussianBlur stdDeviation="2.19"/>
+      <feComposite in2="solid" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.961  0 0 0 0 0.709  0 0 0 0.5 0"/>
+      <feBlend mode="screen" in2="body" result="shaded"/>
+      <feMerge>
+        <feMergeNode in="drop"/>
+        <feMergeNode in="shaded"/>
+      </feMerge>
+    </filter>
+    <!-- Hello → Project/About 분리 모핑: 넓은 블러로 목이 길게 늘어남 + 바 채움(#F4F0E8 60%)·그림자 -->
+    <filter id="splitGoo" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="9"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.957  0 0 0 0 0.941  0 0 0 0 0.910  0 0 0 1 0"/>
+      <feComponentTransfer result="body">
+        <feFuncA type="table" tableValues="0 0 0 0 0 0 0 0 0 0 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2"/>
+      </feComponentTransfer>
+      <feColorMatrix in="body" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 5 0" result="solid"/>
+      <feOffset in="solid" dx="3.85" dy="6.16"/>
+      <feGaussianBlur stdDeviation="3"/>
+      <feComposite in2="solid" operator="out" result="dropA"/>
+      <!-- Multiply: 배경 × #C1C1C1 색 (CSS 변수, 페이지 배경 따라 바뀜) -->
+      <feFlood style="flood-color: rgb(var(--shadow-mul))" flood-opacity="0.5"/>
+      <feComposite in2="dropA" operator="in" result="drop"/>
+      <feOffset in="solid" dx="1.54" dy="2.31"/>
+      <feGaussianBlur stdDeviation="2.7"/>
+      <feComposite in2="solid" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.961  0 0 0 0 0.709  0 0 0 0.5 0"/>
+      <feBlend mode="screen" in2="body" result="shaded"/>
+      <feMerge><feMergeNode in="drop"/><feMergeNode in="shaded"/></feMerge>
+    </filter>
+    <!-- 프로젝트 목록 모핑: 넓은 블러 → 흰 유리 톤 임계값 + 그림자 (참고: 알약들이 끈적하게 붙는 모핑) -->
+    <filter id="projGoo" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="9"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/>
+      <feComponentTransfer result="body">
+        <feFuncA type="table" tableValues="0 0 0 0 0 0 0 0 0 0 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2"/>
+      </feComponentTransfer>
+      <feColorMatrix in="body" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 5 0" result="solid"/>
+      <feOffset in="solid" dx="5" dy="8"/>
+      <feGaussianBlur stdDeviation="4"/>
+      <feComposite in2="solid" operator="out" result="dropA"/>
+      <!-- Multiply: 배경 × #C1C1C1 색 (CSS 변수, 페이지 배경 따라 바뀜) -->
+      <feFlood style="flood-color: rgb(var(--shadow-mul))" flood-opacity="0.5"/>
+      <feComposite in2="dropA" operator="in" result="drop"/>
+      <feOffset in="solid" dx="2" dy="3"/>
+      <feGaussianBlur stdDeviation="3.5"/>
+      <feComposite in2="solid" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.961  0 0 0 0 0.709  0 0 0 0.5 0"/>
+      <feBlend mode="screen" in2="body" result="shaded"/>
+      <feMerge><feMergeNode in="drop"/><feMergeNode in="shaded"/></feMerge>
+    </filter>
+    <!-- 글자 전환 왜곡: 가로 띠 모양 노이즈로 위아래로 휘게 (두께·색 분리 없음) -->
+    <filter id="warpText" x="-30%" y="-80%" width="160%" height="260%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.09" numOctaves="1" seed="3" result="noise"/>
+      <feDisplacementMap id="warpDisp" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="G" yChannelSelector="R"/>
+    </filter>
+    <!-- Hello I'm: 젖은 종이에 스미는 번짐 (js/hero.js 가 흐림·변위·알파 문턱을 0 으로 풀어 줌) -->
+    <filter id="inkBleed" x="-20%" y="-60%" width="140%" height="220%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="3" seed="7" result="paper"/>
+      <feGaussianBlur id="inkBlur" in="SourceGraphic" stdDeviation="7" result="wet"/>
+      <feDisplacementMap id="inkDisp" in="wet" in2="paper" scale="16" xChannelSelector="R" yChannelSelector="G" result="seep"/>
+      <feComponentTransfer><feFuncA id="inkA" type="linear" slope="1.5" intercept="-0.6"/></feComponentTransfer>
+    </filter>
+  </svg>
+
+  <!-- Figma 187:460 Mouse — property: Default | mouse-click | Scroll | view -->
+  <div class="cursor" id="cursor" data-state="default" aria-hidden="true">
+    <div class="cursor__dot glass" data-glass></div>
+    <div class="cursor__label glass" data-glass><span class="cursor__text"></span></div>
+  </div>
+
+  <script src="js/cursor.js?v=321"></script>
+  <script src="js/project.js?v=347"></script>
+  <script src="js/glass.js?v=334"></script>
+  <script src="js/detail.js?v=366"></script>
+  <script src="js/lock.js?v=366"></script>
+  <script src="js/mulshadow.js?v=321"></script>
+  <script src="js/contrast.js?v=321"></script>
+  <script src="js/optic.js?v=334"></script>
+  <script src="js/intro.js?v=321"></script>
+  <script src="js/hero.js?v=356"></script>
+  <script src="js/about.js?v=362"></script>
+  <script src="js/drip.js?v=367"></script>
+  <script src="js/liquid.js?v=361"></script>
+</body>
+</html>

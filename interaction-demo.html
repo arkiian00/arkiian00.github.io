@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wellow Flow Demo</title>
+  <style>
+    /* interaction_flow.gif 의 HTML 버전 — 실제 인터랙션 페이지를 자동으로 재생 (배경 투명) */
+    html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+    .demo { position: fixed; inset: 0; }
+    .demo iframe { width: 100%; height: 100%; border: 0; background: transparent; display: block; }
+    /* 자동 재생 중 실제 마우스 입력이 끼어들지 않게 막는 투명 막 */
+    .demo__shield { position: absolute; inset: 0; }
+  </style>
+</head>
+<body>
+  <div class="demo">
+    <iframe id="stage" src="interaction.html" title="Wellow 인터랙션 자동 재생" allowtransparency="true"></iframe>
+    <div class="demo__shield" aria-hidden="true"></div>
+  </div>
+  <script src="js/interaction-demo.js?v=9"></script>
+</body>
+</html>

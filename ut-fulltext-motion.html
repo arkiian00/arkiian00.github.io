@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Full Text UT Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,700&display=swap" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+@font-face { font-family: "RIDIBatang"; src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.0/RIDIBatang.woff") format("woff"); }
+
+:root {
+  --blue: #5775a7;
+  --cream: #faf4e9;
+  --coral: #d0705a;
+  --ink: #1d1d1f;
+  --muted: #8a8780;
+  --stage: #efede8;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #111; overflow: hidden; }
+body { display: grid; place-items: center; font-family: "Pretendard", "Inter", sans-serif; }
+
+/* 1920 × 1080 무대 — 화면에 맞춰 축소 */
+.stage {
+  position: absolute; left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  margin: -540px 0 0 -960px;
+  overflow: hidden;
+  background: var(--stage);
+  transform: scale(var(--fit, 1));
+  transform-origin: center;
+}
+.stage::before { /* 은은한 점 패턴 */
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1.2px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse at 70% 50%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 70% 50%, #000 0%, transparent 70%);
+}
+
+/* ── 왼쪽 텍스트 ── */
+.copy { position: absolute; left: 170px; top: 0; width: 940px; height: 100%; }
+.copy__group { position: absolute; left: 0; top: 230px; width: 100%; }
+.chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  height: 44px; padding: 0 20px 0 14px;
+  border-radius: 22px;
+  font-family: "Inter", sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  transform-origin: 0 50%;
+  opacity: 0;
+}
+.chip i { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+.chip--problem { color: var(--coral); background: rgba(208,112,90,0.12); }
+.chip--solution { color: var(--blue); background: rgba(87,117,167,0.13); }
+.headline {
+  margin: 28px 0 0; font-family: "Inter", sans-serif; font-weight: 700; font-size: 80px; white-space: nowrap; line-height: 1.02; letter-spacing: -0.035em; color: var(--ink);
+}
+.headline .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 8px; margin-bottom: -8px; }
+.headline .w > span { display: inline-block; transform: translateY(110%); }
+.desc {
+  margin: 26px 0 0; max-width: 660px;
+  font-size: 27px; line-height: 1.6; font-weight: 500; letter-spacing: -0.02em; color: #55524c;
+  opacity: 0;
+}
+.desc b { color: var(--ink); font-weight: 700; }
+
+/* 단계 트래커 */
+.steps { position: absolute; left: 0; top: 590px; width: 680px; display: flex; flex-direction: column; gap: 14px; }
+.step {
+  display: flex; align-items: center; gap: 16px;
+  height: 64px; padding: 0 22px 0 12px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 10px 24px -12px rgba(0,0,0,0.18);
+  font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink);
+  transform-origin: 0 50%;
+  opacity: 0;
+}
+.step__no {
+  width: 40px; height: 40px; border-radius: 13px; flex: none;
+  display: grid; place-items: center;
+  font-family: "Inter", sans-serif; font-size: 18px; font-weight: 700; color: #fff; background: var(--coral);
+}
+.step__verb {
+  font-family: "Inter", sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em;
+  padding: 5px 10px; border-radius: 8px; color: var(--coral); background: rgba(208,112,90,0.12);
+}
+.step__txt { flex: 1; }
+.steps--after .step__no { background: var(--blue); }
+.steps--after .step__verb { color: var(--blue); background: rgba(87,117,167,0.13); }
+.step--ghost { background: rgba(255,255,255,0.55); box-shadow: none; color: #6c6a64; }
+
+.tally {
+  position: absolute; left: 0; top: 920px;
+  display: flex; align-items: baseline; gap: 14px;
+  font-family: "Inter", sans-serif; opacity: 0; transform-origin: 0 100%;
+}
+.tally b { font-size: 64px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.tally span { font-family: "Pretendard", sans-serif; font-size: 22px; font-weight: 600; color: var(--muted); }
+.tally--problem b { color: var(--coral); }
+.tally--solution b { color: var(--blue); }
+
+/* ── 폰 ── */
+.rig { position: absolute; left: 1150px; top: 50%; width: 414px; height: 812px; margin-top: -406px; }
+.device {
+  position: absolute; inset: 0;
+  padding: 12px; border-radius: 58px; background: #111;
+  box-shadow: inset 0 0 0 2px #2b2b2d, inset 0 0 0 5px #0a0a0a, 0 0 0 2px #c9c9cc, 0 0 0 3px #8e8e93,
+    0 40px 80px -20px rgba(0,0,0,0.35), 0 8px 20px rgba(0,0,0,0.1);
+  transform-origin: 50% 60%;
+}
+.device__notch {
+  position: absolute; z-index: 30; top: 12px; left: 50%; width: 162px; height: 32px; transform: translateX(-50%);
+  background: #111; border-radius: 0 0 20px 20px;
+}
+.device__btn { position: absolute; width: 4px; background: linear-gradient(90deg, #8e8e93, #c9c9cc); border-radius: 2px; }
+.device__btn--a { left: -5px; top: 120px; height: 30px; }
+.device__btn--b { left: -5px; top: 180px; height: 58px; }
+.device__btn--c { left: -5px; top: 252px; height: 58px; }
+.device__btn--d { right: -5px; top: 200px; height: 90px; }
+.screen {
+  position: relative; width: 390px; height: 788px; overflow: hidden; background: #fff; border-radius: 46px; isolation: isolate;
+}
+.sb { position: relative; height: 44px; font-family: "Inter", sans-serif; }
+.sb__time { position: absolute; left: 0; top: 0; bottom: 0; width: 86px; display: grid; place-items: center; font-size: 15px; font-weight: 600; }
+.sb__icons { position: absolute; right: 0; top: 0; bottom: 0; width: 100px; display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 2px; }
+
+/* 손가락 */
+.finger {
+  position: absolute; z-index: 50; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  background: rgba(30,30,30,0.28);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 6px 16px rgba(0,0,0,0.25);
+  opacity: 0;
+  pointer-events: none;
+}
+.ripple {
+  position: absolute; z-index: 49; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  border-radius: 50%; border: 3px solid rgba(255,255,255,0.95);
+  opacity: 0; pointer-events: none;
+}
+.trail {
+  position: absolute; z-index: 48; left: 0; top: 0; width: 46px; margin-left: -23px;
+  border-radius: 23px;
+  background: rgba(87,117,167,0.22);
+  opacity: 0; pointer-events: none; transform-origin: 50% 0;
+}
+
+/* ── BEFORE (midfi) ── */
+.b-top { position: relative; height: 52px; border-bottom: 1px solid #f0f0f0; font-family: "Inter", sans-serif; }
+.b-globe { position: absolute; left: 20px; top: 15px; width: 18px; height: 18px; border: 1.5px solid #bbb; border-radius: 50%; }
+.b-globe::before { content: ""; position: absolute; inset: -1.5px 4px; border: 1.5px solid #bbb; border-radius: 50%; }
+.b-url { position: absolute; left: 46px; top: 10px; width: 160px; height: 28px; border-radius: 8px; background: #f2f2f2; color: #888; font-size: 13px; line-height: 28px; padding-left: 10px; }
+.b-pill {
+  position: absolute; left: 118px; top: 3px; width: 150px; height: 42px; border-radius: 21px;
+  background: rgba(250,244,233,0.985); box-shadow: -2px 4px 12px rgba(0,0,0,0.13);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 4px 0 10px; z-index: 5;
+}
+.b-pill .ic { width: 22px; height: 22px; display: grid; place-items: center; color: var(--blue); font-size: 20px; }
+.b-pill .ic--on { width: 36px; height: 36px; border-radius: 50%; background: var(--blue); box-shadow: -1px -1px 1px #f7f7f7, 1px 1px 2px rgba(0,0,0,0.25); }
+.b-sumbtn {
+  position: absolute; left: 282px; top: 4px; width: 40px; height: 40px; border-radius: 50%; z-index: 5;
+  background: rgba(250,244,233,0.985); box-shadow: -2px 4px 12px rgba(0,0,0,0.13), inset 0 0 0 3px #f3e6cf;
+  display: grid; place-items: center; transform: scale(0); opacity: 0;
+}
+.b-art { padding: 18px 20px; font-family: "Inter", sans-serif; color: #222; }
+.b-art__k { font-size: 11px; letter-spacing: 0.06em; color: #888; }
+.b-art__h { margin: 6px 0 4px; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+.b-art__m { font-size: 11px; color: #999; }
+.b-art__p { margin: 22px 0 0; font-size: 15px; line-height: 28.5px; }
+.b-hint { position: absolute; left: 20px; top: 452px; font-size: 11px; color: #999; opacity: 0; }
+.b-pop {
+  position: absolute; left: 20px; top: 140px; width: 356px; padding: 20px 20px 22px;
+  border-radius: 20px; background: #faf3e8; box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+  color: var(--blue); z-index: 4;
+  transform-origin: 70% 0; transform: scale(0.1); opacity: 0;
+}
+.b-pop__k { font-size: 12px; color: #7c8db0; }
+.b-pop__h { margin: 10px 0 6px; font-size: 15px; font-weight: 700; }
+.b-pop__m { font-size: 12px; color: #7c8db0; }
+.b-pop__p { margin: 14px 0 0; font-size: 13.5px; line-height: 23px; }
+.b-sheet {
+  position: absolute; left: 18px; top: 296px; width: 356px; border-radius: 20px; overflow: hidden;
+  background: #fdfbf8; box-shadow: 0 10px 30px rgba(0,0,0,0.18); color: var(--blue); z-index: 6;
+  transform: translateY(560px);
+}
+.b-sheet__head { background: #f7efe1; padding: 18px 18px 20px; font-size: 14px; font-weight: 700; line-height: 22px; border-bottom: 1px solid #ece4d6; }
+.b-sheet ul { margin: 0; padding: 18px 18px 22px 36px; font-size: 13px; line-height: 22px; }
+.b-sheet li { margin-bottom: 10px; }
+.b-dim { position: absolute; inset: 0; background: rgba(0,0,0,0.08); z-index: 3; opacity: 0; }
+
+/* ── AFTER (Wellow) ── */
+.a-screen { display: flex; flex-direction: column; }
+.a-bar { flex: none; height: 52px; display: grid; place-items: center; border-bottom: 0.5px solid #efefef; }
+.a-field { display: flex; align-items: center; justify-content: space-between; width: 366px; height: 36px; padding: 4px 10px; border-radius: 8px; background: #e4e0de; font-family: "Inter", sans-serif; }
+.a-aa { font-size: 12px; } .a-aa b { font-size: 16px; font-weight: 300; }
+.a-url { display: flex; align-items: center; gap: 6px; font-size: 16px; }
+.a-art {
+  flex: 1; min-height: 0; overflow: hidden; padding: 8px 27px 0 29px;
+  font-family: "Source Serif 4", Georgia, serif; font-size: 18px; font-variation-settings: "opsz" 60; line-height: 25.7px; color: #242424;
+}
+.a-art p { margin: 0 0 16px; }
+.a-tool { flex: none; height: 80px; position: relative; z-index: 5; }
+.a-tool img { width: 100%; height: 100%; display: block; }
+.a-pill {
+  position: absolute; z-index: 8; left: 101px; top: 96px; width: 188px; height: 44px; padding: 4px;
+  display: flex; border-radius: 22px; background: rgba(250,244,233,0.985); box-shadow: -2px 4px 12px rgba(0,0,0,0.12);
+}
+.a-knob { position: absolute; left: 64px; top: 4px; width: 60px; height: 36px; border-radius: 20px; background: var(--blue); box-shadow: -1px -1px 1px #f7f7f7, 1px 1px 2px rgba(0,0,0,0.25); }
+.a-item { position: relative; z-index: 1; width: 60px; height: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.a-item .lab { font-family: "Inter", sans-serif; font-size: 8px; line-height: 8px; margin-top: 2px; color: var(--cream); }
+.pi { position: relative; width: 22px; height: 22px; }
+.pi img { position: absolute; }
+.pi--quote img:first-child { left: 1px; top: 1px; width: 10.25px; height: 13.794px; }
+.pi--quote img:last-child { left: 10.75px; top: 7.26px; width: 10.25px; height: 13.794px; transform: rotate(180deg); }
+.pi--full img:first-child { left: 13.64%; top: 13.64%; width: 72.72%; height: 72.72%; }
+.pi--full img:last-child { left: 31.82%; top: 36.36%; width: 36.36%; height: 27.28%; }
+.pi--logo img { inset: 0; width: 22px; height: 22px; }
+.swap { position: relative; width: 22px; height: 22px; }
+.swap > * { position: absolute; inset: 0; }
+.a-item--full .lab, .a-item--full .on { opacity: 0; }
+.a-item--wellow .lab { position: absolute; bottom: 2px; }
+.a-item--wellow .swap { margin-top: -8px; }
+
+.ft { position: absolute; z-index: 7; left: 17px; top: 155px; width: 356px; height: 470px; perspective: 1400px; }
+.ft__tab {
+  position: absolute; left: 2px; top: 0; width: 351px; height: 246px; border-radius: 20px 20px 0 0; overflow: hidden;
+  background: rgba(87,117,167,0.985); box-shadow: -2px 4px 12px rgba(0,0,0,0.12);
+  opacity: 0;
+}
+.ft__act {
+  position: absolute; left: 143px; top: 14px; width: 63px; display: flex; flex-direction: column; align-items: center;
+  font-family: "Inter", sans-serif; font-size: 12px; line-height: 21px; color: var(--cream); opacity: 0;
+}
+.ft__tab--bottom { border-radius: 0 0 20px 20px; height: 275px; }
+.ft__tab--bottom .ft__act { top: auto; bottom: 16px; left: 144px; }
+.ft__panel {
+  position: absolute; left: 0; top: 14px; width: 356px; padding: 8px; border-radius: 20px; overflow: hidden;
+  display: flex; flex-direction: column;
+  background: rgba(250,244,233,0.985); box-shadow: -2px 4px 12px rgba(0,0,0,0.12);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  opacity: 0;
+}
+.ft__panel--sum { top: 0; transform: rotateX(180deg); opacity: 1; }
+.ft__head { display: flex; flex-direction: column; gap: 4px; padding: 20px 20px 10px 16px; }
+.ft__title { margin: 0; font-family: "RIDIBatang", "Noto Serif KR", serif; font-size: 16px; font-weight: 400; line-height: 21px; color: var(--blue); }
+.ft__sub, .ft__meta { margin: 0; font-family: "Pretendard", sans-serif; font-size: 12px; line-height: 21px; color: var(--blue); }
+.ft__meta { color: #999; }
+.ft__body {
+  position: relative; height: 232px; overflow: hidden; border-radius: 20px; background: #fdfbf8;
+  box-shadow: -1px -1px 1px #f7f7f7, 1px 1px 2px rgba(0,0,0,0.25);
+  padding: 20px 20px 20px 16px; font-family: "Pretendard", sans-serif; font-size: 14px; line-height: 21px; color: var(--blue);
+}
+.ft__body p { margin: 0; }
+.ft__body::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(253,251,248,0) 70%, #fdfbf8 100%); }
+.ft__body h3 { margin: 0 0 6px; font-family: "RIDIBatang", serif; font-size: 16px; font-weight: 400; line-height: 24px; }
+.ft__body .si { line-height: 24px; margin-bottom: 8px; }
+.blob { position: absolute; z-index: 7; background: rgba(250,244,233,0.985); box-shadow: -2px 4px 12px rgba(0,0,0,0.12); opacity: 0; }
+
+/* ── 마무리 비교 ── */
+.compare { position: absolute; left: 0; top: 590px; width: 720px; display: flex; flex-direction: column; gap: 26px; }
+.row { display: flex; align-items: center; gap: 22px; opacity: 0; transform-origin: 0 50%; }
+.row__label { width: 110px; font-family: "Inter", sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); }
+.row__track { display: flex; align-items: center; gap: 10px; }
+.tok {
+  height: 58px; min-width: 58px; padding: 0 18px; border-radius: 29px;
+  display: grid; place-items: center;
+  font-family: "Inter", sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: #fff;
+  transform: scale(0);
+}
+.tok--b { background: var(--coral); }
+.tok--a { background: var(--blue); }
+.tok--swipe { padding: 0 28px 0 24px; }
+.row__count { margin-left: 8px; font-family: "Inter", sans-serif; font-size: 40px; font-weight: 700; letter-spacing: -0.03em; }
+.row--before .row__count { color: var(--coral); }
+.row--after .row__count { color: var(--blue); }
+.arrow { color: #bdb9b1; font-size: 22px; font-family: "Inter", sans-serif; opacity: 0; }
+
+/* 진행 바 */
+.progress { position: absolute; left: 170px; right: 170px; bottom: 54px; height: 3px; border-radius: 2px; background: rgba(0,0,0,0.07); overflow: hidden; }
+.progress i { position: absolute; inset: 0; background: #a9a59d; transform-origin: 0 50%; transform: scaleX(0); }
+.labels { position: absolute; left: 170px; bottom: 68px; display: flex; gap: 26px; font-family: "Inter", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.1em; color: #b4b0a8; }
+.labels span { transition: color .3s; }
+.labels span.on { color: #55524c; }
+.is-export .progress, .is-export .labels { display: none; }
+.hud { position: fixed; left: 16px; bottom: 12px; font: 12px/1.4 "Inter", sans-serif; color: #888; }
+.is-export + .hud { display: none; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- 왼쪽 문구 -->
+  <div class="copy">
+    <div class="copy__group" id="gProblem">
+      <span class="chip chip--problem"><i></i>Problem 01</span>
+      <h1 class="headline"><span class="w"><span>Complex</span></span> <span class="w"><span>Navigation</span></span></h1>
+      <p class="desc">전체 번역과 요약을 확인하는 과정에서<br /><b>여러 단계의 조작</b>이 필요해 사용 흐름이 복잡했습니다.</p>
+    </div>
+    <div class="copy__group" id="gSolution">
+      <span class="chip chip--solution"><i></i>Solution 01</span>
+      <h1 class="headline"><span class="w"><span>Swipe-Based</span></span> <span class="w"><span>Navigation</span></span></h1>
+      <p class="desc">번역과 요약을 <b>하나의 화면 흐름</b>으로 통합하고,<br />스와이프로 콘텐츠를 전환하도록 개선했습니다.</p>
+    </div>
+
+    <div class="steps steps--before" id="stepsB">
+      <div class="step"><span class="step__no">1</span><span class="step__verb">TAP</span><span class="step__txt">Full text 버튼 → 번역 팝업</span></div>
+      <div class="step"><span class="step__no">2</span><span class="step__verb">TAP</span><span class="step__txt">화면을 탭해 팝업 닫기</span></div>
+      <div class="step"><span class="step__no">3</span><span class="step__verb">TAP</span><span class="step__txt">새로 생긴 요약 버튼 찾아 누르기</span></div>
+      <div class="step"><span class="step__no">4</span><span class="step__verb">TAP</span><span class="step__txt">다시 화면을 탭해 닫기</span></div>
+    </div>
+    <div class="tally tally--problem" id="tallyB"><b>4 taps</b><span>· 팝업 2개를 오가는 끊긴 흐름</span></div>
+
+    <div class="steps steps--after" id="stepsA">
+      <div class="step"><span class="step__no">1</span><span class="step__verb">TAP</span><span class="step__txt">Full text → 번역 카드</span></div>
+      <div class="step"><span class="step__no">2</span><span class="step__verb">SWIPE ↓</span><span class="step__txt">카드를 끌어내려 요약으로 넘기기</span></div>
+      <div class="step step--ghost"><span class="step__no">↺</span><span class="step__verb">SWIPE ↑</span><span class="step__txt">언제든 다시 번역으로</span></div>
+    </div>
+    <div class="tally tally--solution" id="tallyA"><b>1 tap + swipe</b><span>· 한 장의 카드 안에서 연결된 흐름</span></div>
+
+    <div class="compare" id="compare">
+      <div class="row row--before">
+        <span class="row__label">BEFORE</span>
+        <span class="row__track"><span class="tok tok--b">TAP</span><span class="tok tok--b">TAP</span><span class="tok tok--b">TAP</span><span class="tok tok--b">TAP</span></span>
+        <span class="row__count">4</span>
+      </div>
+      <div class="row row--after">
+        <span class="row__label">AFTER</span>
+        <span class="row__track"><span class="tok tok--a">TAP</span><span class="tok tok--a tok--swipe">SWIPE ↓</span></span>
+        <span class="row__count">2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BEFORE 폰 -->
+  <div class="rig" id="rigB">
+    <div class="device" id="devB">
+      <span class="device__btn device__btn--a"></span><span class="device__btn device__btn--b"></span><span class="device__btn device__btn--c"></span><span class="device__btn device__btn--d"></span>
+      <span class="device__notch"></span>
+      <div class="screen" id="scrB">
+        <div class="sb"><span class="sb__time">9:41</span><span class="sb__icons"><img src="assets/interaction/cellular.svg" width="18" height="12" alt="" /><img src="assets/interaction/wifi.svg" width="16" height="12" alt="" /><img src="assets/interaction/battery.svg" width="25" height="12" alt="" /></span></div>
+        <div class="b-top">
+          <span class="b-globe"></span>
+          <span class="b-url">philosophy-today.com</span>
+          <div class="b-pill">
+            <span class="ic"><span class="pi pi--quote"><img src="assets/interaction/quote-1.svg" alt="" /><img src="assets/interaction/quote-2.svg" alt="" /></span></span>
+            <span class="ic" style="font-size:22px">✻</span>
+            <span class="ic ic--on"><span class="pi pi--full"><img src="assets/interaction/fulltext-1-white.svg" alt="" /><img src="assets/interaction/fulltext-2-white.svg" alt="" /></span></span>
+          </div>
+          <div class="b-sumbtn" id="bSum"><img src="assets/interaction/summarize.svg" width="22" height="22" alt="" /></div>
+        </div>
+        <div class="b-art">
+          <div class="b-art__k">PHILOSOPHY TODAY</div>
+          <div class="b-art__h">The Ephemeral and the Eternal</div>
+          <div class="b-art__m">Mar 12, 2025 · 4 min read</div>
+          <p class="b-art__p">The concept of ephermeral beauty has long fascinated philosophers. It refers to phenomena that are transient in nature, existing only briefly before fading. Contemplating the liminal space between waking and dreaming reveals how the mind constructs reality from incomplete signals. Such loquacious meditations can render even the most sanguine reader pensive.</p>
+        </div>
+        <div class="b-hint" id="bHint">화면을 탭하면 닫힙니다</div>
+        <div class="b-dim" id="bDim"></div>
+        <div class="b-pop" id="bPop">
+          <div class="b-pop__k">오늘의 철학</div>
+          <div class="b-pop__h">찰나와 영원</div>
+          <div class="b-pop__m">2025년 3월 12일 · 4분</div>
+          <p class="b-pop__p">찰나의 아름다움이라는 개념은 오랫동안 철학자들을 매료시켜 왔습니다. 이는 본질적으로 일시적이며, 사라지기 전 아주 짧은 시간 동안만 존재하는 현상을 일컫습니다. 깨어 있음과 꿈꾸는 상태 사이의 경계(liminal) 공간을 고찰해 보면, 우리의 마음이 불완전한 신호들로부터 어떻게 현실을 구성해 내는지 알 수 있습니다.</p>
+        </div>
+        <div class="b-sheet" id="bSheet">
+          <div class="b-sheet__head">덧없는 아름다움과 현실의 모호한 경계에 대한 철학적 고찰은, 아무리 낙천적인 사람이라도 깊은 사색에 잠기게 만든다는 내용입니다.</div>
+          <ul>
+            <li><b>찰나의 아름다움 (Ephemeral):</b> 철학자들은 본질적으로 일시적이고 금방 사라져 버리는 아름다움의 현상에 오랫동안 매료되어 왔습니다.</li>
+            <li><b>현실의 재구성 (Liminal space):</b> 꿈과 현실 사이의 경계 지점을 고찰해 보면, 마음이 어떻게 현실을 구성해 내는지 알 수 있습니다.</li>
+            <li><b>사색의 영향 (Pensive):</b> 깊고 장황한 명상은 긍정적인 독자마저도 진지한 생각에 빠져들게 합니다.</li>
+          </ul>
+        </div>
+        <div class="trail" id="trailB"></div>
+        <div class="ripple" id="ripB"></div>
+        <div class="finger" id="fingB"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFTER 폰 -->
+  <div class="rig" id="rigA">
+    <div class="device" id="devA">
+      <span class="device__btn device__btn--a"></span><span class="device__btn device__btn--b"></span><span class="device__btn device__btn--c"></span><span class="device__btn device__btn--d"></span>
+      <span class="device__notch"></span>
+      <div class="screen a-screen" id="scrA">
+        <div class="sb"><span class="sb__time">9:41</span><span class="sb__icons"><img src="assets/interaction/cellular.svg" width="18" height="12" alt="" /><img src="assets/interaction/wifi.svg" width="16" height="12" alt="" /><img src="assets/interaction/battery.svg" width="25" height="12" alt="" /></span></div>
+        <div class="a-bar"><div class="a-field"><span class="a-aa">A<b>A</b></span><span class="a-url"><img src="assets/interaction/lock.svg" width="11" height="13" alt="" />medium.com/no-time/</span><img src="assets/interaction/reload.svg" width="12" height="12" alt="" /></div></div>
+        <div class="a-art">
+          <p>Depending on the language, it generally took me <strong>two to four months</strong> of focused learning to become comfortable enough to hold conversations, understand native content, and continue learning independently. Those months, however, were anything but easy. They demanded <strong>three to four dedicated hours of practice almost every single day</strong>, even after long school hours, and remaining consistent even when progress felt almost invisible.</p>
+          <p>There were days when I replayed the same conversation repeatedly because I could not understand a single phrase, rewrote sentences until they sounded natural, and revised the same vocabulary before it finally stayed in my memory.</p>
+        </div>
+        <div class="a-tool"><img src="assets/interaction/toolbar.png" alt="" /></div>
+
+        <div class="a-pill" id="aPill">
+          <span class="a-knob" id="aKnob"></span>
+          <span class="a-item"><span class="pi pi--quote"><img src="assets/interaction/quote-1.svg" alt="" /><img src="assets/interaction/quote-2.svg" alt="" /></span></span>
+          <span class="a-item a-item--wellow">
+            <span class="swap"><span class="pi pi--logo on" id="aLogoOn"><img src="assets/interaction/logo.svg" alt="" /></span><span class="pi pi--logo off" id="aLogoOff" style="opacity:0"><img src="assets/interaction/logo-blue.svg" alt="" /></span></span>
+            <span class="lab" id="aLogoLab">Wellow</span>
+          </span>
+          <span class="a-item a-item--full">
+            <span class="swap"><span class="pi pi--full off" id="aFullOff"><img src="assets/interaction/fulltext-1.svg" alt="" /><img src="assets/interaction/fulltext-2.svg" alt="" /></span><span class="pi pi--full on" id="aFullOn"><img src="assets/interaction/fulltext-1-white.svg" alt="" /><img src="assets/interaction/fulltext-2-white.svg" alt="" /></span></span>
+            <span class="lab" id="aFullLab">Full text</span>
+          </span>
+        </div>
+
+        <div class="blob" id="aBlob"></div>
+        <section class="ft" id="ft">
+          <div class="ft__tab" id="ftTab"><div class="ft__act" id="ftAct"><img src="assets/interaction/summarize.svg" width="22" height="22" alt="" /><span>summarize</span></div></div>
+          <div class="ft__tab ft__tab--bottom" id="ftTabB"><div class="ft__act" id="ftActB"><span class="pi pi--full"><img src="assets/interaction/fulltext-1-white.svg" alt="" /><img src="assets/interaction/fulltext-2-white.svg" alt="" /></span><span>Full text</span></div></div>
+          <div class="ft__panel" id="ftPanel">
+            <header class="ft__head">
+              <h2 class="ft__title">"어떤 언어든 유창하게 말하고 싶나요? 이 5가지 매일의 습관을 시작해 보세요</h2>
+              <p class="ft__sub">수개월 동안 공부했는데도 여전히 말하기가 어렵다면, 이 습관들이 당신의 학습 방식을 바꿔놓을 수 있습니다.</p>
+              <p class="ft__meta">읽는 데 10분 소요 • 2026년 7월 28일</p>
+            </header>
+            <div class="ft__body"><p>저는 영어, 힌디어, 프랑스어, 스페인어, 산스크리트어에 능통하며, 16살 때는 영국식, 미국식, 인도식 영어 억양을 자연스럽게 넘나드는 법도 터득했습니다. 사람들이 이 이야기를 들을 때면 종종 놀라곤 하는데, 제가 가장 많이 받는 질문은 "어떻게 그렇게 어린 나이에 그렇게 많은 언어를 배웠나요?"입니다. 언어에 따라 다르지만, 대화가 가능하고 원어민의 콘텐츠를 이해하며…</p></div>
+          </div>
+          <div class="ft__panel ft__panel--sum" id="ftSum">
+            <header class="ft__head">
+              <h2 class="ft__title">16세에 5개 국어와 다양한 영어 억양을 마스터한 작가가 자신의 언어 학습 여정을 바꿔놓은 '5가지 매일의 습관'을 소개하는 내용입니다.</h2>
+            </header>
+            <div class="ft__body">
+              <div class="si"><h3>1. 매일 하루도 빠짐없이 듣기</h3>팟캐스트나 인터뷰, 영화 등을 자막 없이 듣고, 대사를 소리 내어 따라 하는 '능동적인 듣기'로 언어의 리듬을 체화합니다.</div>
+              <div class="si"><h3>2. 첫날부터 말하기</h3>'유창해질 때까지' 기다리지 말고 첫날부터 아는 단어라도 소리 내어 말해야 합니다.</div>
+            </div>
+          </div>
+        </section>
+        <div class="trail" id="trailA"></div>
+        <div class="ripple" id="ripA"></div>
+        <div class="finger" id="fingA"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="labels" id="labels"><span>01 PROBLEM</span><span>02 BEFORE</span><span>03 SOLUTION</span><span>04 AFTER</span><span>05 COMPARE</span></div>
+  <div class="progress"><i id="prog"></i></div>
+</div>
+<div class="hud">Space 재생/정지 · ← → 1초 이동 · R 처음부터</div>
+
+<script>
+(() => {
+  const params = new URLSearchParams(location.search);
+  const EXPORT = params.has('export');
+  const stage = document.getElementById('stage');
+  if (EXPORT) stage.classList.add('is-export');
+  const $ = (s) => (typeof s === 'string' ? document.querySelector(s) : s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+
+  function fit() {
+    if (EXPORT) return stage.style.setProperty('--fit', 1);
+    stage.style.setProperty('--fit', Math.min(innerWidth / 1920, innerHeight / 1080));
+  }
+  fit(); addEventListener('resize', fit);
+
+  // ── 스프링 이징 (감쇠 진동을 linear()로 샘플링) — 쫀득함의 핵심 ──
+  function spring(zeta) {
+    const w = 6.9 / zeta, wd = w * Math.sqrt(1 - zeta * zeta), N = 72, pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      pts.push((1 - Math.exp(-zeta * w * t) * (Math.cos(wd * t) + (zeta * w / wd) * Math.sin(wd * t))).toFixed(4));
+    }
+    pts[N] = 1;
+    return `linear(${pts.join(',')})`;
+  }
+  const E = {
+    jelly: spring(0.32),
+    pop: spring(0.45),
+    soft: spring(0.62),
+    out: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    in: 'cubic-bezier(0.55, 0, 0.75, 0.2)',
+    inout: 'cubic-bezier(0.65, 0, 0.35, 1)',
+    flip: 'cubic-bezier(0.45, 0, 0.2, 1)',
+    lin: 'linear',
+  };
+
+  // ── 타임라인: 모든 애니메이션을 하나의 시계로 seek ──
+  const anims = [];
+  function A(target, frames, at, dur, ease = 'pop') {
+    const els = [].concat(target).flatMap((x) => (typeof x === 'string' ? $$(x) : [x]));
+    els.forEach((el) => {
+      const a = el.animate(frames, { duration: dur, delay: at, fill: 'forwards', easing: E[ease] || ease });
+      a.pause();
+      anims.push(a);
+    });
+  }
+  const stagger = (sel, frames, at, dur, gap, ease) => $$(sel).forEach((el, i) => A(el, frames, at + i * gap, dur, ease));
+
+  // 손가락 헬퍼
+  function finger(id, rip, trail) {
+    const f = $(id), r = $(rip), tr = $(trail);
+    let x = 0, y = 0;
+    const pos = (px, py, s = 1) => `translate(${px}px, ${py}px) scale(${s})`;
+    return {
+      show(at, px, py) { x = px; y = py; A(f, [{ opacity: 0, transform: pos(px + 30, py + 60, 1.3) }, { opacity: 1, transform: pos(px, py, 1) }], at, 600, 'soft'); },
+      move(at, px, py, dur = 600) { A(f, [{ transform: pos(x, y) }, { transform: pos(px, py) }], at, dur, 'soft'); x = px; y = py; },
+      tap(at) {
+        A(f, [{ transform: pos(x, y, 1) }, { transform: pos(x, y, 0.72), offset: 0.35 }, { transform: pos(x, y, 1) }], at, 380, 'out');
+        A(r, [{ opacity: 0.9, transform: pos(x, y, 0.7) }, { opacity: 0, transform: pos(x, y, 2.4) }], at + 90, 560, 'out');
+      },
+      drag(at, px, py, dur, ease = 'inout') {
+        A(f, [{ transform: pos(x, y, 1) }, { transform: pos(x, y, 0.8), offset: 0.12 }, { transform: pos(px, py, 0.8), offset: 0.9 }, { transform: pos(px, py, 1) }], at, dur, ease);
+        const top = Math.min(y, py), h = Math.abs(py - y);
+        const g = { transform: `translate(${x}px, ${top - 23}px)`, height: `${h + 46}px` };
+        A(tr, [{ ...g, opacity: 0 }, { ...g, opacity: 1, offset: 0.3 }, { ...g, opacity: 1, offset: 0.8 }, { ...g, opacity: 0 }], at, dur + 200, 'lin');
+        x = px; y = py;
+      },
+      hide(at) { A(f, [{ opacity: 1, transform: pos(x, y) }, { opacity: 0, transform: pos(x + 30, y + 60, 1.2) }], at, 400, 'out'); },
+    };
+  }
+
+  // 문구 그룹 등장/퇴장
+  function copyIn(g, at) {
+    A(`${g} .chip`, [{ opacity: 0, transform: 'scale(0.4)' }, { opacity: 1, transform: 'scale(1)' }], at, 900, 'jelly');
+    stagger(`${g} .w > span`, [{ transform: 'translateY(110%) rotate(6deg)' }, { transform: 'translateY(0) rotate(0)' }], at + 120, 1000, 90, 'pop');
+    A(`${g} .desc`, [{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'translateY(0)' }], at + 420, 900, 'out');
+  }
+  function copyOut(g, at) {
+    A(`${g} .chip`, [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-30px)' }], at, 420, 'in');
+    stagger(`${g} .w > span`, [{ transform: 'translateY(0)' }, { transform: 'translateY(-115%)' }], at + 40, 460, 60, 'in');
+    A(`${g} .desc`, [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-24px)' }], at + 120, 420, 'in');
+  }
+  const stepIn = (el, at) => A(el, [{ opacity: 0, transform: 'translateX(-30px) scale(0.85, 0.6)' }, { opacity: 1, transform: 'translateX(0) scale(1)' }], at, 900, 'jelly');
+  const stepsOut = (sel, at) => stagger(sel, [{ opacity: 1, transform: 'translateX(0)' }, { opacity: 0, transform: 'translateX(-40px)' }], at, 380, 50, 'in');
+
+  let TOTAL = 0;
+  function build() {
+    const fB = finger('#fingB', '#ripB', '#trailB');
+    const fA = finger('#fingA', '#ripA', '#trailA');
+    const stepsB = $$('#stepsB .step'), stepsA = $$('#stepsA .step');
+
+    // 초기 상태: AFTER 폰은 화면 밖
+    $('#devA').style.transform = 'translateY(1200px)';
+
+    // ============ 01 PROBLEM ============
+    copyIn('#gProblem', 300);
+    A('#devB', [{ transform: 'translateY(1100px) rotate(8deg)' }, { transform: 'translateY(0) rotate(0)' }], 700, 1300, 'pop');
+    $('#devB').style.transform = 'translateY(1100px)';
+
+    // ============ 02 BEFORE ============
+    let t = 2400;
+    fB.show(t, 250, 70);
+    fB.tap(t + 650);
+    // ① 번역 팝업이 Full text 버튼에서 튀어나옴
+    A('#bPop', [{ opacity: 0, transform: 'scale(0.08, 0.04)' }, { opacity: 1, transform: 'scale(1)' }], t + 760, 1000, 'pop');
+    A('#bDim', [{ opacity: 0 }, { opacity: 1 }], t + 760, 300, 'out');
+    stepIn(stepsB[0], t + 760);
+
+    // ② 화면을 탭해서 닫기 → 요약 버튼이 새로 생김
+    t = 4700;
+    fB.move(t, 200, 640, 700);
+    fB.tap(t + 800);
+    A('#bPop', [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.08, 0.04)' }], t + 900, 420, 'in');
+    A('#bDim', [{ opacity: 1 }, { opacity: 0 }], t + 900, 300, 'out');
+    A('#bSum', [{ opacity: 0, transform: 'scale(0)' }, { opacity: 1, transform: 'scale(1)' }], t + 1300, 900, 'jelly');
+    A('#bHint', [{ opacity: 0 }, { opacity: 1 }], t + 1300, 500, 'out');
+    stepIn(stepsB[1], t + 900);
+
+    // ③ 요약 버튼 찾아서 누르기 → 시트
+    t = 7000;
+    fB.move(t, 302, 72, 800);
+    fB.tap(t + 900);
+    A('#bSum', [{ transform: 'scale(1)' }, { transform: 'scale(0.82)', offset: 0.3 }, { transform: 'scale(1)' }], t + 900, 600, 'out');
+    A('#bSheet', [{ transform: 'translateY(560px)' }, { transform: 'translateY(0)' }], t + 1050, 1100, 'pop');
+    A('#bDim', [{ opacity: 0 }, { opacity: 1 }], t + 1050, 300, 'out');
+    stepIn(stepsB[2], t + 1000);
+
+    // ④ 다시 화면 탭해서 닫기
+    t = 9500;
+    fB.move(t, 200, 220, 700);
+    fB.tap(t + 800);
+    A('#bSheet', [{ transform: 'translateY(0)' }, { transform: 'translateY(-14px)', offset: 0.2 }, { transform: 'translateY(560px)' }], t + 900, 600, 'in');
+    A('#bDim', [{ opacity: 1 }, { opacity: 0 }], t + 900, 300, 'out');
+    stepIn(stepsB[3], t + 900);
+    fB.hide(t + 1500);
+    A('#tallyB', [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1)' }], t + 1500, 900, 'jelly');
+    // 복잡함 강조: 단계 카드들이 한 번 흔들림
+    stagger('#stepsB .step', [{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)', offset: 0.2 }, { transform: 'translateX(7px)', offset: 0.45 }, { transform: 'translateX(-4px)', offset: 0.7 }, { transform: 'translateX(0)' }], t + 2000, 520, 60, 'lin');
+
+    // ============ 03 SOLUTION — 전환 ============
+    t = 13000;
+    copyOut('#gProblem', t);
+    stepsOut('#stepsB .step', t);
+    A('#tallyB', [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.8)' }], t + 150, 380, 'in');
+    // 폰: 살짝 눌렸다가 아래로 퇴장 → 새 폰이 튀어오름
+    A('#devB', [{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-30px) scale(0.96, 1.02)', offset: 0.3 }, { transform: 'translateY(1200px) rotate(-8deg) scale(1)' }], t, 900, 'in');
+    copyIn('#gSolution', t + 700);
+    A('#devA', [{ transform: 'translateY(1200px) rotate(8deg)' }, { transform: 'translateY(0) rotate(0)' }], t + 800, 1300, 'pop');
+
+    // ============ 04 AFTER ============
+    // ① Full text 탭 — knob 이 쫀득하게 이동
+    t = 15600;
+    fA.show(t, 255, 118);
+    fA.tap(t + 650);
+    const tap1 = t + 700;
+    A('#aKnob', [{ left: '64px', transform: 'scale(1)' }, { left: '96px', transform: 'scale(1.35, 0.8)', offset: 0.45 }, { left: '124px', transform: 'scale(1)' }], tap1, 700, 'pop');
+    A(['#aLogoOn', '#aLogoLab'], [{ opacity: 1 }, { opacity: 0 }], tap1, 200, 'out');
+    A('#aLogoOff', [{ opacity: 0 }, { opacity: 1 }], tap1 + 150, 250, 'out');
+    A('#aFullOff', [{ opacity: 1 }, { opacity: 0 }], tap1 + 150, 200, 'out');
+    A(['#aFullOn', '#aFullLab'], [{ opacity: 0 }, { opacity: 1 }], tap1 + 250, 250, 'out');
+    A('#aPill', [{ transform: 'scale(1)' }, { transform: 'scale(0.95, 1.06)', offset: 0.3 }, { transform: 'scale(1)' }], tap1, 700, 'pop');
+    stepIn(stepsA[0], tap1);
+    fA.hide(t + 1200);
+
+    // 베이지 원이 pill 에서 떨어져 나와 → 카드로 펼쳐짐
+    const P = $('#ftPanel'), ph = P.offsetHeight;
+    const card = { l: 17, t: 169, w: 356, h: ph };
+    const C = 44;
+    const circ = (dy) => ({ left: `${card.l + card.w / 2 - C / 2}px`, top: `${card.t + dy}px`, width: `${C}px`, height: `${C}px`, borderRadius: `${C / 2}px` });
+    const blobAt = tap1 + 500;
+    A('#aBlob', [{ ...circ(-51), opacity: 0, transform: 'scale(0.5)' }, { ...circ(-40), opacity: 1, transform: 'scale(0.75)', offset: 0.25 }, { ...circ(6), opacity: 1, transform: 'scale(1.06, 0.94)', offset: 0.7 }, { ...circ(0), opacity: 1, transform: 'scale(1)' }], blobAt, 460, 'out');
+    A('#aBlob', [{ ...circ(0), opacity: 1 }, { left: `${card.l}px`, top: `${card.t}px`, width: `${card.w}px`, height: `${card.h}px`, borderRadius: '20px', opacity: 1 }], blobAt + 460, 800, 'pop');
+    A('#ftPanel', [{ opacity: 0, transform: 'scale(0.98)' }, { opacity: 1, transform: 'scale(1)' }], blobAt + 1000, 300, 'out');
+    A('#aBlob', [{ opacity: 1 }, { opacity: 0 }], blobAt + 1150, 250, 'out');
+    A('#ftTab', [{ opacity: 0, transform: 'translateY(36px) scale(0.92, 0.6)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], blobAt + 1250, 800, 'jelly');
+
+    // ② 카드를 아래로 스와이프 → summarize 아이콘 → 넘겨져서 요약
+    t = 19200;
+    fA.show(t, 195, 245);
+    const pull = t + 600;
+    fA.drag(pull, 195, 360, 1300, 'inout');
+    A('#ftPanel', [{ transform: 'translateY(0) rotateX(0)' }, { transform: 'translateY(57px) rotateX(0)', offset: 0.45 }, { transform: 'translateY(84px) rotateX(-10deg)' }], pull + 150, 1100, 'inout');
+    A('#ftAct', [{ opacity: 0, transform: 'translateY(-8px) scale(0.6)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], pull + 350, 700, 'jelly');
+    const flip = pull + 1250;
+    A('#ftPanel', [{ transform: 'translateY(84px) rotateX(-10deg)' }, { transform: 'translateY(-14px) rotateX(-180deg)' }], flip, 820, 'flip');
+    A('#ftSum', [{ transform: 'translateY(98px) rotateX(170deg)' }, { transform: 'translateY(0) rotateX(0deg)' }], flip, 820, 'flip');
+    A('#ftTab', [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(60px)' }], flip, 320, 'in');
+    // 카드가 내려앉을 때 살짝 눌림 (squash)
+    A('#ft', [{ transform: 'scale(1)' }, { transform: 'scale(1.025, 0.975)', offset: 0.4 }, { transform: 'scale(1)' }], flip + 760, 520, 'pop');
+    const S = $('#ftSum'), sh = S.offsetHeight;
+    $('#ftTabB').style.top = `${sh + 14 - 275}px`;
+    A('#ftTabB', [{ opacity: 0, transform: 'translateY(-60px)' }, { opacity: 1, transform: 'translateY(0)' }], flip + 480, 700, 'jelly');
+    stepIn(stepsA[1], flip + 200);
+    fA.hide(flip + 300);
+
+    // ③ 위로 스와이프 → 다시 번역 (왕복 가능)
+    t = flip + 2000;
+    fA.show(t, 195, 400);
+    const push = t + 600;
+    fA.drag(push, 195, 290, 1200, 'inout');
+    A('#ftSum', [{ transform: 'translateY(0) rotateX(0)' }, { transform: 'translateY(-58px) rotateX(0)', offset: 0.45 }, { transform: 'translateY(-80px) rotateX(10deg)' }], push + 150, 1000, 'inout');
+    A('#ftActB', [{ opacity: 0, transform: 'translateY(8px) scale(0.6)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], push + 350, 700, 'jelly');
+    const flip2 = push + 1150;
+    A('#ftSum', [{ transform: 'translateY(-80px) rotateX(10deg)' }, { transform: 'translateY(14px) rotateX(180deg)' }], flip2, 820, 'flip');
+    A('#ftPanel', [{ transform: 'translateY(-94px) rotateX(-170deg)' }, { transform: 'translateY(0) rotateX(0deg)' }], flip2, 820, 'flip');
+    A('#ftTabB', [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-60px)' }], flip2, 320, 'in');
+    A('#ftAct', [{ opacity: 1 }, { opacity: 0 }], flip2, 10, 'lin');
+    A('#ftTab', [{ opacity: 0, transform: 'translateY(60px)' }, { opacity: 1, transform: 'translateY(0)' }], flip2 + 480, 700, 'jelly');
+    A('#ft', [{ transform: 'scale(1)' }, { transform: 'scale(1.025, 0.975)', offset: 0.4 }, { transform: 'scale(1)' }], flip2 + 760, 520, 'pop');
+    stepIn(stepsA[2], flip2 + 200);
+    fA.hide(flip2 + 300);
+    A('#tallyA', [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1)' }], flip2 + 900, 900, 'jelly');
+
+    // ============ 05 COMPARE ============
+    t = flip2 + 3300;
+    stepsOut('#stepsA .step', t);
+    A('#tallyA', [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.8)' }], t + 100, 380, 'in');
+    const rows = $$('#compare .row');
+    rows.forEach((r, i) => A(r, [{ opacity: 0 }, { opacity: 1 }], t + 400 + i * 1300, 300, 'out'));
+    $$('.row--before .tok').forEach((el, i) => A(el, [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], t + 500 + i * 160, 800, 'jelly'));
+    $$('.row--after .tok').forEach((el, i) => A(el, [{ transform: 'scale(0)' }, { transform: 'scale(1)' }], t + 1800 + i * 200, 800, 'jelly'));
+    A('.row--before .row__count', [{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], t + 1150, 800, 'jelly');
+    A('.row--after .row__count', [{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], t + 2300, 800, 'jelly');
+    // 마지막으로 After 폰이 요약 상태로 한 번 더 넘겨지며 마무리
+    const f3 = t + 2600;
+    A('#ftPanel', [{ transform: 'translateY(0) rotateX(0deg)' }, { transform: 'translateY(-14px) rotateX(-180deg)' }], f3, 820, 'flip');
+    A('#ftSum', [{ transform: 'translateY(14px) rotateX(180deg)' }, { transform: 'translateY(0) rotateX(0deg)' }], f3, 820, 'flip');
+    A('#ftTab', [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(60px)' }], f3, 320, 'in');
+    A('#ftActB', [{ opacity: 1 }, { opacity: 0 }], f3, 10, 'lin');
+    A('#ftTabB', [{ opacity: 0, transform: 'translateY(-60px)' }, { opacity: 1, transform: 'translateY(0)' }], f3 + 480, 700, 'jelly');
+
+    // 아웃트로: 전체 페이드
+    const end = t + 6400;
+    A('.copy', [{ opacity: 1 }, { opacity: 0 }], end, 600, 'out');
+    A('#rigA', [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.94)' }], end, 600, 'in');
+    TOTAL = end + 900;
+
+    // 장면 라벨
+    labelMarks = [0, 2400, 13000, 15600, t, TOTAL];
+  }
+
+  // ── 재생 ──
+  let labelMarks = [];
+  const prog = $('#prog'), labelEls = $$('#labels span');
+  let playing = !EXPORT && !params.has('t'), cur = 0, last = performance.now();
+  function seek(ms) {
+    cur = ((ms % TOTAL) + TOTAL) % TOTAL;
+    anims.forEach((a) => { a.currentTime = cur; });
+    prog.style.transform = `scaleX(${cur / TOTAL})`;
+    labelEls.forEach((el, i) => el.classList.toggle('on', cur >= labelMarks[i] && cur < labelMarks[i + 1]));
+  }
+  function loop(now) {
+    if (playing) seek(cur + (now - last));
+    last = now;
+    requestAnimationFrame(loop);
+  }
+  addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { playing = !playing; e.preventDefault(); }
+    if (e.key === 'ArrowRight') seek(cur + 1000);
+    if (e.key === 'ArrowLeft') seek(cur - 1000);
+    if (e.key === 'r' || e.key === 'R') seek(0);
+  });
+
+  document.fonts.ready.then(() => {
+    build();
+    window.__motion = { seek, get total() { return TOTAL; } };
+    seek(Number(params.get('t')) || 0);
+    if (!EXPORT) requestAnimationFrame((n) => { last = n; loop(n); });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="sum_fulltext">
+<path id="Vector" d="M3 16V16.7143C3 17.9767 4.02335 19 5.28571 19H6" stroke="#FAF4E9"/>
+<path id="Vector_2" d="M8 19H16.7143C17.9767 19 19 17.9767 19 16.7143V5.28571C19 4.02335 17.9767 3 16.7143 3H5.28571C4.02335 3 3 4.02335 3 5.28571V14" stroke="#FAF4E9"/>
+<path id="Star 1" d="M7 21L8.69706 16.6971L13 15L8.69706 13.3029L7 9L5.30294 13.3029L1 15L5.30294 16.6971L7 21Z" stroke-linejoin="round" stroke="#FAF4E9"/>
+<path id="Vector_3" d="M7 7.5H15M7.5 10.5H15" stroke="#FAF4E9"/>
+<path id="Rectangle 1" d="M3 16V19H6" stroke="#FAF4E9"/>
+<path id="Rectangle 1_2" d="M3 14V3H19V19H8" stroke="#FAF4E9"/>
+</g>
+</svg>

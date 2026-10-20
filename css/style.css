@@ -1,0 +1,1935 @@
+@font-face {
+  font-family: "PP Woodland";
+  src: local("PP Woodland Ultralight"), local("PPWoodland-Ultralight"),
+    url("../fonts/PPWoodland-Ultralight.otf") format("opentype");
+  font-weight: 200;
+  font-display: swap;
+}
+
+:root {
+  /* Figma style P-1 (Glass) */
+  --glass-fill: rgba(244, 240, 232, 0.2);   /* Figma 유리 채움 20% */
+  --glass-fill-light: rgba(244, 240, 232, 0.2);
+  /* 그림자 Multiply: 배경이 단색이라 "배경색 × 그림자색" 을 미리 곱한 색으로 그리면 multiply 와 같음
+     #C1C1C1 × 배경 · rgb(40,45,55) × 배경 — 페이지 배경이 바뀌면 같이 바뀜 (body.is-detail) */
+  --shadow-mul: 139 152 102;     /* #C1C1C1 × #B8C987 */
+  --shadow-deep: 29 35 29;       /* rgb(40,45,55) × #B8C987 */
+  --glass-drop: 5px 8px 8px 3px rgb(var(--shadow-mul) / 0.5);
+  --glass-inner: inset 2px 3px 7px 0 rgba(255, 245, 181, 0.5);
+  --radius: 20px;
+  --frame-max: 1200px;
+  --font-display: "PP Woodland", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+/* 축소된 1200px 디자인 영역의 원래 크기가 페이지 폭을 밀어내지 않도록 (모바일에서 화면이 작아지는 문제) */
+html, body { overflow-x: hidden; }
+
+body {
+  background: var(--color-bg-accent-olive, #b8c987);   /* Figma 187:278 표지: 단색 (WebGL 배경 삭제) */
+  color: #000;
+  font-family: var(--font-display);
+  font-weight: 200;
+  overflow-x: hidden;
+}
+
+/* 커스텀 커서가 있는 환경에서만 기본 커서 숨김 */
+@media (hover: hover) and (pointer: fine) {
+  body.has-cursor, body.has-cursor * { cursor: none !important; }
+}
+
+/* 상세 페이지 배경: 모든 상세 페이지 #F9F8F4 (Figma 148:3440) — 상세 HTML 의 var(--color-bg-canvas) 도 이 값 */
+body.is-detail {
+  --color-bg-canvas: #f9f8f4;
+  background: var(--color-bg-canvas);
+  --shadow-mul: 188 188 185;     /* #C1C1C1 × #F9F8F4 */
+  --shadow-deep: 39 44 53;       /* rgb(40,45,55) × #F9F8F4 */
+  --glass-drop: 5px 8px 8px 3px rgb(var(--shadow-mul) / 0.5);
+}
+/* 푸터(올리브)가 덮인 동안은 그림자 multiply 색도 올리브 × #C1C1C1 — 바 · 방울 · 액체 몸체(목록이 바로 들어갈 때)
+   · Home 으로 날아갈 때까지 모두 처음 화면 Hello 와 같은 multiply 그림자 */
+body.is-detail.foot-down { --shadow-mul: var(--foot-mul, 139 152 102); }
+/* 상세 페이지(Tailwind) 프레임 그림자도 Multiply 색으로 */
+body .shadow-\[5px_8px_8px_3px_rgba\(193\,193\,193\,0\.5\)\] {
+  --tw-shadow: 5px 8px 8px 3px rgb(var(--shadow-mul) / 0.5);
+}
+
+/* ---------- Frame (max 1200, centered) ---------- */
+.frame {
+  position: relative;
+  overflow-x: clip;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--frame-max);
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Glass base ---------- */
+.glass {
+  position: relative;
+  border-radius: var(--radius);
+  background: var(--glass-fill);
+  box-shadow: var(--glass-drop), var(--glass-inner);
+}
+
+/* ---------- Stage (Figma 1200×800 좌표계) ---------- */
+.stage-fit {
+  --s: 1;
+  position: relative;
+  width: calc(1200px * var(--s));
+  height: calc(800px * var(--s));
+  flex-shrink: 0;
+}
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1200px;
+  height: 800px;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+}
+
+/* AHYUN 레터링 + metaball
+   .goo 래퍼 = 글자 영역(그룹 left 11 / top 307, svg 여백 -3.75 / -1.875) + 사방 80px
+   필터는 이 래퍼에만 1번 적용 → 글자·커서 방울·줄기가 한 덩어리로 섞임 */
+.goo {
+  position: absolute;
+  left: -72.75px;    /* 7.25 - 80 */
+  top: 225.125px;    /* 305.125 - 80 */
+  width: 1351.25px;  /* 1191.25 + 160 */
+  height: 376.875px; /* 216.875 + 160 */
+  pointer-events: none;
+  filter: url(#ahyunGoo);
+  will-change: transform, filter;
+  transform: translateZ(0);
+}
+.name {
+  position: absolute;
+  left: 80px;
+  top: 80px;
+  width: 1191.25px;
+  height: 216.875px;
+}
+/* 커서 방울: 20px 원을 translate3d + scale 로만 움직임 (리플로우 없음) */
+.goo__blob {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transform: scale(0);
+  transform-origin: 50% 50%;
+}
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Navigation Bar (Figma 187:278 → 97:825)
+   기본: 화면 중앙 402×52 (left 399, top 374) / 열림: H의 가로획 사이 336×52 (left 259, top 381) */
+/* 폭 402 고정 (화면 가운데 600 기준), 좁은 화면(402 + 좌우 30 = 462 미만)에서는 비율 유지 축소 — 스테이지 배율과 무관하게
+   보이는 크기가 402 × k 가 되도록 --nk = k / 스테이지 배율 (js/hero.js) */
+.nav {
+  position: absolute;
+  left: 399px;
+  top: 374px;
+  width: 402px;
+  height: 52px;
+  transform: scale(var(--nk, 1));
+  z-index: 2;
+  padding: 0 10px;
+  border-radius: 20px;
+  box-shadow: var(--glass-drop), var(--glass-inner);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav__label {
+  font-size: 26px;
+  line-height: normal;
+  text-align: center;
+  width: 100%;
+}
+
+/* ---------- Hello 클릭 → Project / About 분리 (Figma 187:290) ---------- */
+.split[hidden] { display: none; }
+.split {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* 분리 중 액체 몸체: 바 위치(399, 19) 기준 여백 영역에만 필터 */
+.split__goo {
+  position: absolute;
+  left: 359px;      /* 바(399, 19) 기준 여백 40 / 120 */
+  top: -101px;
+  width: 482px;
+  height: 292px;
+  filter: url(#splitGoo);
+  will-change: transform, filter;
+  transform: translateZ(0);
+}
+.split__goo.is-done { display: none; }
+.split__blob,
+.split__neck {
+  position: absolute;
+  background: #fff;
+}
+.split__blob {
+  left: 40px;
+  top: 120px;
+  width: 402px;
+  height: 52px;
+  border-radius: 20px;
+}
+.split__neck {
+  left: 0;
+  top: 0;
+  width: 100px;     /* transform scale 로 크기 조절 (리플로우 없음) */
+  height: 100px;
+  border-radius: 50%;
+  transform: scale(0);
+}
+.bar {
+  position: absolute;
+  left: 399px;      /* 맨 위 Hello(399, 19) 자리에서 갈라짐 */
+  top: 19px;
+  width: 402px;
+  height: 52px;
+  z-index: 2;
+  padding: 0 10px;
+  border-radius: 20px;
+  box-shadow: var(--glass-drop), var(--glass-inner);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  pointer-events: auto;
+  will-change: transform;
+}
+/* 분리 중에는 몸체를 액체 레이어가 그리므로 바는 글자만 */
+.bar.is-liquid {
+  background: transparent;
+  box-shadow: none;
+}
+.bar__label {
+  position: relative;
+  display: block;
+  width: 100%;
+  font-size: 26px;
+  line-height: normal;
+  text-align: center;
+}
+/* 글자 전환: 상하 회전(rotateX) + 세로 늘어남 + 디스플레이스먼트 왜곡 */
+.roll {
+  position: relative;
+  display: block;
+  perspective: 90px;
+  filter: url(#warpText);
+}
+.roll__w {
+  display: block;
+  backface-visibility: hidden;
+  transform-origin: 50% 50% -10px;
+}
+.roll__new {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(90deg);
+}
+
+/* ---------- Project 화면 (Figma 187:520 → 187:308) ---------- */
+/* 나머지 요소는 수면 아래로 가라앉듯 사라짐 */
+#goo, .float, #barBottom, .split__goo {
+  transition: opacity 0.55s ease, filter 0.55s ease;
+}
+/* AHYUN(#goo)은 사라지지 않고 푸터처럼 되감기로 물속으로 가라앉음 (js/project.js → IntroClose) */
+.stage.is-project .float,
+.stage.is-project #barBottom,
+.stage.is-project .split__goo {
+  opacity: 0;
+  filter: blur(8px);
+  pointer-events: none;
+}
+.stage.is-project #barTop { opacity: 0; pointer-events: none; }
+
+.proj[hidden] { display: none; }
+/* 디자인 영역(축소·세로 가운데) 밖, 브라우저 화면 맨 위 가운데에 고정 */
+.proj {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.proj__col {
+  --ps: 1;   /* 화면 폭 402 미만이면 비율 축소 (최소 300/402) — project.js 에서 갱신 */
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 402px;   /* 402 고정 — 화면이 402 + 좌우 30 보다 좁으면 전체를 같은 비율로 축소 (project.js) */
+  transform: translateX(-50%) translateY(var(--py, 0px)) scale(var(--ps));   /* Hello 바와 같은 배율 · GNB 90 안 가운데 */
+  transform-origin: 50% 0;
+}
+/* 187:520 Navigation Bar — 402 폭, 26px, 채움 20%. 최종 위치는 맨 위(GNB 90 안 가운데) */
+.pbar {
+  position: absolute;
+  left: 0;
+  top: 19px;      /* GNB 90 안 가운데: (90 - 52) / 2 */
+  width: 100%;
+  height: 52px;   /* Figma 187:325 — 402 × 52 (위아래 16 + 글자 20) */
+  z-index: 3;
+  padding: 0 10px;
+  border-radius: 20px;
+  background: var(--glass-fill-light);
+  box-shadow: var(--glass-drop), var(--glass-inner);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  text-decoration: none;
+  font-size: 26px;
+  line-height: normal;
+  pointer-events: auto;
+  transform-origin: 0 0;
+  will-change: transform;
+  transition: background 0.6s ease;
+}
+/* 분리된 바(채움 60%)에서 이어받아 시작 */
+.pbar.is-from-split { background: var(--glass-fill); transition: none; }
+
+/* 목록 모핑 레이어: 바(top 19)·패널(top 91) 주변 여백 60px 에만 필터 */
+.proj__goo {
+  position: absolute;
+  left: -60px;
+  top: -49.5px;
+  width: calc(100% + 120px);
+  height: 740.5px;   /* 목록 480 (카드 5개) */
+  filter: url(#projGoo);
+  will-change: transform, filter;
+  transform: translateZ(0);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.proj__goo.is-on { opacity: 1; transition: none; }
+.proj__blob,
+.proj__neck {
+  position: absolute;
+  background: #fff;
+  will-change: transform;
+}
+.proj__blob { left: 60px; width: calc(100% - 120px); border-radius: 20px; transform: scale(0); }
+.proj__blob--bar { top: 68.5px; height: 52px; transform-origin: 50% 50%; }
+.proj__blob--list { top: 140.5px; height: 480px; transform-origin: 50% 0; }
+.proj__neck { left: 0; top: 0; width: 100px; height: 100px; border-radius: 50%; transform: scale(0); }
+/* About · Home 물방울 (바 52px, 간격 20 → 바 top 91 / 163, 액체 레이어 기준 +49.5) */
+.proj__blob--menu { top: 140.5px; height: 52px; transform-origin: 50% 0; }
+.proj__blob--home { top: 212.5px; }
+/* 모핑 중에는 바·패널의 몸체를 액체 레이어가 그림 */
+.pbar.is-liquid { background: transparent; box-shadow: none; transition: none; }
+.plist.is-liquid { opacity: 0; }
+.plist.is-in { opacity: 1; }
+
+/* 187:323 목록 패널 — GNB(90) 아래 12px */
+.plist {
+  position: absolute;
+  left: 0;
+  top: 91px;      /* 바(19 + 52) 아래 간격 20 */
+  width: 100%;
+  z-index: 2;
+  padding: 30px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--glass-drop), var(--glass-inner);
+  pointer-events: auto;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.pcard {
+  position: relative;
+  display: block;
+  height: 80px;
+  border-radius: 14px;
+  overflow: hidden;
+  color: var(--color-text-brand, #61471e);
+  text-decoration: none;
+  font-size: 20px;
+  line-height: normal;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.plist.is-in .pcard { opacity: 1; transform: none; }
+.plist.is-in .pcard:nth-of-type(2) { transition-delay: 0.07s; }
+.plist.is-in .pcard:nth-of-type(3) { transition-delay: 0.14s; }
+.plist.is-in .pcard:nth-of-type(4) { transition-delay: 0.21s; }
+.plist.is-in .pcard:nth-of-type(5) { transition-delay: 0.28s; }
+/* 카드 배경(색·이미지·그라디언트) 한 덩어리 — 호버 유리에서 이 덩어리에만 반투명-투명-반투명 그라데이션 (글자는 그대로) */
+.pcard__bg {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+.pcard__img {
+  position: absolute;
+  max-width: none;
+  pointer-events: none;
+}
+/* 카드 내용(이미지·그라디언트·글자)을 한 덩어리로 — 굴절 레이어는 이 덩어리 전체를 복제 */
+.pcard__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 16px 10px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.pcard__grad {       /* 이미지 위 그라디언트 */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* 이름 · 분류: 이름은 한 줄씩 그대로, 2px 점(아래 4px 띄움), 분류는 남은 폭 */
+.pcard__title,
+.pcard__dot,
+.pcard__cat {
+  position: relative;
+  z-index: 1;
+}
+.pcard__title { flex: none; white-space: nowrap; }
+.pcard__dot {
+  flex: none;
+  width: 2px;
+  height: 2px;
+  margin-bottom: 4px;
+  background: var(--color-text-brand, #61471e);   /* Figma 11:186 — 점도 글자색(brand) */
+}
+.pcard__cat { flex: 1; min-width: 0; }
+.pcard--wello .pcard__bg { background: #faf4ea; }
+.pcard--wello .pcard__img { left: 43.89%; top: -16.36%; width: 56.07%; height: 503.94%; }
+.pcard--framer .pcard__img { left: 47.13%; top: -10.19%; width: 55.14%; height: 184.81%; }
+.pcard--framer .pcard__title { color: #000; }
+.pcard--framer .pcard__grad { background: linear-gradient(to right, #fff 54.995%, rgba(255, 255, 255, 0) 63.437%); }
+.pcard--realworld .pcard__img { left: -0.03%; top: -408.99%; width: 113.95%; height: 679.03%; }
+.pcard--realworld .pcard__grad { background: linear-gradient(to right, #fbb5bd 49.519%, rgba(255, 255, 255, 0) 79.327%); }
+.pcard--shuttlefit, .pcard--northface { color: #fff; }
+.pcard--shuttlefit .pcard__dot, .pcard--northface .pcard__dot { background: #fff; }
+.pcard--shuttlefit .pcard__img { left: 18.25%; top: -75.26%; width: 97.31%; height: 326.14%; }
+.pcard--shuttlefit .pcard__grad { background: linear-gradient(to right, #bb5a5b 41.827%, rgba(187, 90, 91, 0) 66.346%); }
+/* Figma 11:186 — The North Face: 자체 이미지 + 어두운 그라디언트 */
+.pcard--northface .pcard__img { left: 43.6%; top: -77.16%; width: 72.65%; height: 231.27%; }
+.pcard--northface .pcard__grad { background: linear-gradient(to right, #2c2c2c 48.734%, rgba(44, 44, 44, 0) 73.603%); }
+
+/* Figma 286:5979 — 스크롤하면 Hello 가 맨 위 GNB(399, 19)로 물방울처럼 굴러 올라감 (모양·글자 왜곡은 js/hero.js) */
+.stage.is-open .nav { top: var(--nav-y, 19px); }
+
+/* ---------- portfoilo (Figma 97:828) — 위에서 본 수면 아래에서 떠오름 (intro.js) ---------- */
+.float {
+  position: absolute;
+  left: 1011.63px;
+  top: 528.88px;
+  pointer-events: none;
+}
+.float__text {
+  font-size: 45.88px;
+  line-height: normal;
+  color: #267388;
+  white-space: nowrap;
+  transform-origin: 50% 55%;
+  opacity: 0;
+}
+.float__text.is-floating {
+  animation: float-breathe 5s ease-in-out infinite;
+}
+/* 위에서 보면 떠 있는 물체는 위아래 대신 크기·흔들림으로 보임 */
+@keyframes float-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50%      { transform: scale(1.012) rotate(-0.4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage.is-open .nav { top: var(--nav-y, 19px); }
+  .stage.is-open .float__text { opacity: 1; }
+  .float__text.is-floating { animation: none; }
+}
+
+/* ---------- Cursor (Figma 187:460) ---------- */
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.cursor.is-visible { opacity: 1; }
+
+.cursor__dot {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  background: var(--glass-fill-light);
+  transition: transform 0.2s ease;
+}
+
+.cursor__label {
+  display: flex;
+  align-items: center;
+  padding: 14px 13px 8px;   /* Figma 187:460 mouse — pt 14 / px 13 / pb 8 */
+  overflow: hidden;
+  background: var(--glass-fill-light);
+  font-size: 20px;          /* Label/card: PP Woodland Ultralight 20 */
+  line-height: 1;
+  white-space: nowrap;
+  /* 방울이 커서 점(dot 중심: 라벨 기준 6px, -16px)에서 뽑혀 나오도록 */
+  transform-origin: 6px -16px;
+  /* 퇴장: 흐려지며 둥근 방울로 줄어들어 점 안으로 흡수 */
+  transform: scale(0.06);
+  filter: blur(6px);
+  border-radius: 50%;
+  opacity: 0;
+  transition:
+    transform 0.4s cubic-bezier(0.55, 0, 0.75, 0.2),
+    filter 0.3s ease-in,
+    border-radius 0.3s ease-in,
+    opacity 0.25s ease-in 0.12s;
+}
+.cursor__text {
+  display: block;
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.9);
+  transition: opacity 0.15s ease-in, filter 0.15s ease-in, transform 0.15s ease-in;
+}
+
+/* property 변형: mouse-click / Scroll / view → 라벨 방울이 쫀득하게 뽑혀 나옴 */
+.cursor[data-state="click"] .cursor__label,
+.cursor[data-state="scroll"] .cursor__label,
+.cursor[data-state="view"] .cursor__label {
+  transform: scale(1);
+  filter: blur(0);
+  border-radius: 20px;
+  opacity: 1;
+  transition:
+    transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 0.45s ease-out,
+    border-radius 0.55s ease-out,
+    opacity 0.18s ease-out;
+}
+.cursor[data-state="click"] .cursor__text,
+.cursor[data-state="scroll"] .cursor__text,
+.cursor[data-state="view"] .cursor__text {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+  transition: opacity 0.35s ease-out 0.18s, filter 0.4s ease-out 0.18s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.18s;
+}
+.cursor.is-pressed .cursor__dot { transform: scale(0.75); }
+
+@media (hover: none), (pointer: coarse) {
+  .cursor { display: none; }
+}
+
+
+/* ---------- 로딩 화면 (Figma 191:602) ---------- */
+.load[hidden] { display: none; }
+/* 래퍼는 쌓임 맥락을 만들지 않음 → 내려올 때는 색 프레임(20) 위로 바(30), 올라갈 때는 그 사이로 상세 페이지(25)가 슬라이드인 */
+.load { pointer-events: none; }
+/* 프로젝트 대표 색 프레임 (radius 40): 바가 내려오는 동안 위에서 아래로 슬라이드인.
+   위아래 40px 씩 화면 밖으로 넉넉하게 — 다 덮었을 때 둥근 모서리가 화면 안에 보이지 않게 */
+.load__fill {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: -40px;
+  height: calc(100% + 80px);
+  z-index: 20;
+  border-radius: 40px;
+  background: #bb5a5b;
+  will-change: transform;
+}
+/* Figma 256:4918 Navigation Bar — 402 × 52, 채움 20%, 글자 26 inverse */
+.load__bar {
+  position: fixed;
+  z-index: 30;
+  left: 50vw;               /* 창 전체 폭의 가운데 — 메인 · 상세 페이지 바와 같은 기준 (50% 는 상세 페이지 스크롤바가 생기면 그 절반만큼 왼쪽으로 밀림) */
+  top: 0;
+  width: 402px;
+  height: 52px;
+  margin-left: -201px;
+  border-radius: 20px;
+  background: var(--glass-fill-light);
+  /* 그림자 색은 바탕(프로젝트 색) × #C1C1C1 로 JS 가 바꿈 (multiply) */
+  box-shadow: 5px 8px 8px 3px var(--load-shadow, rgba(193, 193, 193, 0.5)), var(--glass-inner);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--color-text-inverse, #fff);
+  font-size: 26px;
+  line-height: normal;
+  white-space: nowrap;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+.load__label {
+  position: relative;   /* 3D 원통 글자(.bk-cyl)가 이 안에 겹침 */
+  display: block;
+  width: 100%;          /* 옛 글자(Project)보다 긴 새 이름도 가운데에 오도록 바 전체 폭 */
+  text-align: center;   /* 글자 굴림·왜곡은 안쪽 .roll 이 맡음 (바는 회전하지 않음) */
+}
+
+/* ---------- 상세 페이지 (Figma 122:933) ---------- */
+/* 배경색만 화면 전체 폭, 나머지는 모두 1200 (반응형 미적용) */
+.detail[hidden] { display: none; }
+.detail {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  background: var(--color-bg-canvas, #f9f8f4);
+}
+.detail__root {
+  width: 1200px;
+  margin: 0 auto;
+  zoom: var(--dz, 1);       /* 화면 1240 미만에서만 비율 축소 (detail.js) */
+  padding-bottom: 0;   /* 끝 스크롤 여유가 있으므로 아래 여백 없이 — AHYUN 이 끝까지 바닥에 붙어 있도록 */
+}
+/* 상세 페이지가 열리면 첫 화면 요소는 숨김 */
+body.is-detail .frame,
+body.is-detail .proj { display: none; }
+/* 상세 페이지는 창(window)이 스크롤되도록 — 첫 화면용 높이 100%·가로 숨김 해제 */
+html:has(body.is-detail),
+body.is-detail {
+  height: auto;
+  overflow: visible;
+}
+
+/* Figma 폰트 매핑 */
+.font-wood { font-family: "PP Woodland", "Helvetica Neue", Arial, sans-serif; font-weight: 200; }
+.font-pret-light { font-family: "Pretendard Variable", Pretendard, sans-serif; font-weight: 300; }
+.font-pret { font-family: "Pretendard Variable", Pretendard, sans-serif; font-weight: 400; }
+.font-pret-bold { font-family: "Pretendard Variable", Pretendard, sans-serif; font-weight: 700; }
+.font-pret-xbold { font-family: "Pretendard Variable", Pretendard, sans-serif; font-weight: 800; }
+.font-inter { font-family: Inter, "Helvetica Neue", Arial, sans-serif; font-weight: 400; }
+
+/* 스크롤 시 프레임이 살짝 늦게 따라오며 떠 있는 느낌 (detail.js) */
+.detail__frame { will-change: transform; }
+
+/* 맨 위 Project 바: 화면 위에 고정 (GNB 1200 폭, 가운데) */
+.detail .detail__gnb {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  z-index: 15;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.detail .detail__bar { pointer-events: auto; }
+
+/* 마지막 Next: 고정된 Project 바가 Next 로 바뀌고, 목록은 바로 아래(바 아래 간격 20, top 91)에 고정되어 물방울로 늘어남 */
+.detail .next {
+  position: fixed;
+  left: 50%;
+  top: 91px;
+  z-index: 14;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.next__bar { display: none; }   /* 끝 섹션의 Next 바 대신 고정 바가 Next 가 됨 */
+.next__goo {
+  position: absolute;
+  left: -60px;
+  top: -160px;              /* 고정 바(top 19)까지 포함 */
+  width: 522px;
+  height: 700px;            /* 목록(top 160) 480 + 여백 60 — 카드 5개 */
+  filter: url(#projGoo);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.next__goo.is-on { opacity: 1; transition: none; }
+.next__goo .proj__blob--bar { top: 88px; height: 52px; }   /* 바 top 19 − .next top 91 + 160 */
+#nBlobList { top: 160px; height: 480px; transform-origin: 50% 0; }
+.next__list { opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+.next__list.is-in { opacity: 1; pointer-events: auto; }
+.detail__bar.is-liquid { box-shadow: none !important; }
+.detail__bar.is-liquid > [aria-hidden] { opacity: 0; }
+/* 페이지 끝 스크롤 여유 — 끝 프레임(AHYUN)은 이 구간 동안 화면 바닥에 붙어 남음 */
+.detail__tail { height: 150vh; flex-shrink: 0; }
+/* 예전 끝 프레임(정적 AHYUN 자리 638)은 푸터가 대신하므로 없앰 → 마지막 프레임 바로 아래가 푸터 (Next 묶음은 detail.js 가 밖으로 옮겨 씀) */
+.detail .detail__end { display: none; }
+/* Figma 바(좌우 여백 168)에서 글자가 줄바꿈되지 않도록 */
+.detail__gnb p,
+.next__bar p { white-space: nowrap; }
+
+/* Next 목록 카드: 클릭하면 해당 프로젝트로 이동 */
+.next__card { cursor: pointer; }
+
+/* 호버한 유리 카드가 목록 가장자리에서 잘리지 않도록 */
+.next__list.next__list { overflow: visible; }
+
+/* ---------- 목차 카드 호버: 카드 자체가 두꺼운 유리로 실체화 (js/glass.js) ---------- */
+.pcard.is-glass,
+.next__list > .is-glass {
+  position: relative;
+  z-index: 3;
+  transition: opacity 0.45s ease;   /* transform 은 스프링이 직접 움직임 */
+  will-change: transform;
+}
+/* 유리 몸체: 마우스를 따라가는 반사광 + 위아래 광택 + 아래쪽 안쪽 그늘 + 옅은 무지개 번짐 (흰 테두리 없음) */
+.gcard__glass {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 14px;
+  pointer-events: none;
+  opacity: 0;
+  /* 무채색 유리판: 채움 10% 로 투명하게 + 마우스를 따라가는 은은한 반사광 */
+  background:
+    radial-gradient(circle 110px at var(--mx, 30%) var(--my, 0%), rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 65%),
+    rgba(255, 255, 255, 0.1);
+  /* 양감: 빛을 받는 베벨(왼쪽 위 밝은 모서리 · 오른쪽 아래 립) + 가장자리 안쪽의 밝은 띠 (두께) */
+  box-shadow:
+    inset 1.5px 1.5px 1px -0.5px rgba(255, 255, 255, 0.85),
+    inset -1px -1.5px 1px -0.5px rgba(255, 255, 255, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 0 8px rgba(255, 255, 255, 0.25),
+    inset 0 -26px 30px -12px rgba(255, 255, 255, 0.7),   /* 하단 이너 글로우: 넓게 번짐 (70%) */
+    inset 0 -10px 12px -6px rgba(255, 255, 255, 0.7),
+    inset 0 -3px 4px -2px rgba(255, 255, 255, 0.7);
+}
+/* 상단 Project/Next 바의 그림자(기본 + 호버 유리)가 90px 틀에 잘리지 않도록 — 글자 회전은 바 자체가 잘라 줌 */
+.detail .detail__gnb { overflow: visible; }
+
+/* Figma 33:737 — Project 아래 About · Home (Project 바와 같은 유리 바) */
+.pmenu {
+  top: 91px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.38s ease, background 0.6s ease;
+}
+.pmenu--home { top: 163px; }
+.pmenu--home.is-in { transition-delay: 0.08s; }   /* About 다음 Home */
+.pmenu.is-in { opacity: 1; pointer-events: auto; }
+
+/* Home 클릭 → Home 바만 처음의 Hello 자리로 돌아가고 나머지는 가라앉듯 사라짐 */
+.proj.is-home .pbar, .proj.is-home .plist { transition: opacity 0.55s ease, filter 0.55s ease, background 0.6s ease; }
+.proj.is-home .pbar:not(#phome),
+.proj.is-home .plist {
+  opacity: 0;
+  filter: blur(8px);
+  pointer-events: none;
+}
+.proj.is-home #phome { pointer-events: none; transition: background 0.9s ease; }
+.pmenu .pbar__label { display: block; width: 100%; text-align: center; }
+
+/* 상세 페이지 About · Home: 위 Project/Next 바(402px, 맨 위 고정)와 같은 폭·모양, 간격 20px */
+.dmenu[hidden] { display: none; }
+.dmenu {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  z-index: 16;
+  width: 402px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.dmenu .pbar { box-shadow: var(--glass-drop), var(--glass-inner); }
+.dmenu .pmenu.is-in { pointer-events: auto; }
+/* Home 으로 돌아가는 동안 About 은 가라앉듯 사라짐 */
+.dmenu.is-home #dabout { opacity: 0; filter: blur(8px); transition: opacity 0.55s ease, filter 0.55s ease; pointer-events: none; }
+.dmenu.is-home #dhome { pointer-events: none; transition: background 0.9s ease; }
+/* 메뉴가 열려 있는 동안 페이지 끝 Next 목록은 잠시 숨김 (겹치지 않게) */
+.detail .next { transition: opacity 0.3s ease; }
+.detail.menu-open .next { opacity: 0; pointer-events: none; }
+.detail.menu-open .next * { pointer-events: none !important; }
+/* Home: 상세 페이지가 화면에 고정된 채 서서히 사라지며 처음 화면이 드러남 */
+.detail.is-leaving { transition: opacity 0.8s ease; opacity: 0; pointer-events: none; }
+
+/* 바 호버: 채움 그라데이션 (반투명 → 투명 → 반투명, 모양을 따라감 · 글자 아래) — js/glass.js */
+.gcard__fill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+.next__list > div > div > .overflow-clip > [aria-hidden] { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+/* 상세 페이지 메뉴의 액체 레이어: 맨 위 바(402px)를 기준으로 같은 자리 */
+.dmenu__goo { height: 420px; }
+/* 물방울이 떨어지는 동안 위 바의 몸체는 액체 레이어가 그림 */
+.detail__bar.is-drip { box-shadow: none !important; }
+.detail__bar.is-drip > [aria-hidden],
+.detail__bar.is-drip > div:last-child { opacity: 0; }   /* 배경 · 안쪽 그림자 틀까지 숨김 (회전하는 방울만 보이게) */
+/* About · Home 이 갈라져 내려오는 동안: 몸체는 액체 레이어가 그리고 바는 글자만 함께 움직임 */
+.pmenu.is-splitting { opacity: 1; background: transparent !important; box-shadow: none !important; transition: none; }
+/* About · Home 이 갈라지는 동안의 액체 몸체: Hello 분리와 같은 필터 */
+.proj__goo.is-split { filter: url(#gooFilter); }   /* 블러가 작아 끊어진 뒤 12px 간격에서 다시 붙어 보이지 않음 */
+/* 상세 페이지 컴포넌트 유리: 첫 화면처럼 뒤 배경을 가장자리에서 굴절시키고 흐리게 (js/detail.js 가 크기별 필터 연결) */
+.detail .detail__bar.is-liquid,
+.detail .detail__bar.is-drip,
+.dmenu .pmenu.is-splitting { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+
+/* Wello 상세: Figma 에서 GIF 였던 휴대폰 화면 — 정적 섹션 이미지 위 같은 자리에서 움직임 */
+.wello-screen { position: absolute; max-width: none; object-fit: cover; object-position: 50% 50%; }
+.wello-gif { object-fit: contain; }   /* Figma FIT: 폰 프레임까지 들어 있는 GIF — 잘리지 않게 */
+.wello-camera { position: absolute; max-width: none; pointer-events: none; }
+
+/* ---------- Wello Wireframe (Figma 165:7252): 줄마다 가로 스크롤 ---------- */
+.wire {
+  width: 1200px;
+  height: 1389px;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  border-radius: 40px;
+  overflow: hidden;
+}
+.wire__title { height: 27px; font-size: 26px; line-height: normal; color: #000; white-space: nowrap; }
+.wire__label { font-size: 16px; line-height: 20px; letter-spacing: 0.02em; color: #6c86ca; white-space: nowrap; }
+/* 섹션 전체 폭으로 넓혀 가장자리 그라데이션 아래까지 스크롤, 첫 화면은 Figma 처럼 x 56 */
+.wire__row {
+  flex: none;
+  margin: 0 -60px;
+  height: 321px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  touch-action: pan-x pan-y;
+}
+.wire__row::-webkit-scrollbar { display: none; }
+.wire__row.is-drag { cursor: grabbing; }
+.wire__track { display: flex; gap: 40px; width: max-content; height: 321px; padding: 0 56px; }
+.wire__track img { user-select: none; -webkit-user-drag: none; }
+.wire__strip { display: block; width: 1089px; height: 321px; max-width: none; }
+.wire__screen { position: relative; flex: none; display: block; width: 148px; height: 321px; max-width: none; }
+.ws-v { position: absolute; display: block; }
+.ws-v img { display: block; width: 100%; height: 100%; max-width: none; }
+.ws-t { position: absolute; font-family: "Inter", sans-serif; line-height: normal; color: #3c4f7f; white-space: nowrap; }
+/* Figma "Gradiant": 양쪽 가장자리가 페이지 배경색으로 흐려짐 (왼쪽 7.2% · 오른쪽 5.8%) */
+.wire__fade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to right, #f9f8f4 0%, rgba(249, 248, 244, 0) 7.2%, rgba(249, 248, 244, 0) 94.2%, #f9f8f4 100%);   /* Wellow 페이지 배경 */
+}
+
+/* ---------- Wello Mid-fi (Figma 171:9581): 파란 패널 속 화면들 가로 스크롤 + 함께 움직이는 스크롤바 ---------- */
+.midfi { position: absolute; left: 644px; top: 0; width: 556px; height: 928px; border-radius: 40px; background: #5775a7; overflow: hidden; }
+.midfi__scroll {
+  position: absolute; left: 40px; top: 76px; width: 476px; height: 758px;
+  overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+  scrollbar-width: none; cursor: grab; touch-action: pan-x pan-y;
+}
+.midfi__scroll::-webkit-scrollbar { display: none; }
+.midfi__scroll.is-drag { cursor: grabbing; }
+.midfi__content { display: flex; flex-direction: column; gap: 14.5px; width: max-content; }
+.midfi__row { display: flex; gap: 16.38px; height: 243px; }
+.midfi__row img { display: block; flex: none; width: 120px; height: 243px; max-width: none; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+.midfi__bar { position: absolute; left: 40px; top: 845px; width: 476px; height: 7px; border-radius: 20px; background: #375f90; overflow: hidden; cursor: pointer; }
+.midfi__thumb { width: 189px; height: 7px; border-radius: 20px; background: #678bc6; will-change: transform; cursor: grab; }
+
+/* Framer 상세: 데모 사이트를 그대로 넣은 프레임 (높이 = 1200 × 브라우저 화면 비율) */
+.framer-embed { background: #000; }
+/* Wellow full view 임베드: 프레임은 1200 × 화면 높이, 사이트는 위 90px(고정 바 자리)·아래 20px 를 비운 영역에 96% 크기로 */
+.wello-embed { background: #e9e8e4; --s: 0.96; --top: 90px; --bottom: 20px; }   /* 80% 에서 20% 키움 */
+.framer-embed.wello-embed iframe {   /* .framer-embed iframe(inset 0) 보다 우선 */
+  inset: auto;
+  left: 0;
+  top: var(--top);
+  width: calc(100% / var(--s));
+  height: calc((100% - var(--top) - var(--bottom)) / var(--s));
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+}
+.framer-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+/* 데모 안에 마우스가 있을 땐 페이지의 커스텀 커서를 숨기고 데모 사이트 자체 커서를 씀 */
+body.cursor-away .cursor { opacity: 0 !important; }
+
+/* Framer 상세: Get Component 버튼 (판매 페이지 새 창) — 호버 시 다른 목록처럼 유리 물방울 (js/glass.js) */
+.get-btn { color: inherit; text-decoration: none; cursor: pointer; }
+/* Get Component 글자는 호버 유리 레이어(.gcard__glass) 위에 */
+.get-btn > p { position: relative; z-index: 4; }
+
+/* Figma 187:278 개편: portfoilo 문구는 Figma 에서 빠짐 */
+.float { display: none; }
+/* 프로젝트 화면(올리브 배경) 바 글자는 흰색 (Figma 187:308) */
+.proj .pbar { color: #fff; }
+.proj #pbar { color: #fff; }   /* 프로젝트 화면의 Project 바 글자는 흰색 (자동 대비 제외) */
+
+/* 빛나는 물결 (Figma 187:278) — #F4F0E8 · 배경 올리브만 사용
+   · Animated Radiant Border : 밝은 빛 띠 3개가 테두리 궤도를 따라 계속 돌며 흐름 (--ang)
+   · Iridescent Glow         : 커서 쪽 테두리는 한층 더 밝게 타오르고, 두꺼운 빛 번짐(halo)이 안팎으로 퍼짐
+   · Liquid Shimmer          : 커서에서 둥근 물결(동심원)이 계속 퍼져 나감 (--rip), 노이즈 굴절로 액체처럼 일렁임
+   · Glowing Edge Glass      : 유리 몸체는 그대로, 빛은 가장자리를 투과해 퍼짐
+   애니메이션은 호버 중(.is-glass)에만 돌아감 */
+@property --ang { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
+@property --rip { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@keyframes rim-spin { to { --ang: 360deg; } }
+@keyframes rim-ripple { to { --rip: 34px; } }
+.is-glass > .gcard__glass { animation: rim-ripple 1.8s linear infinite; }
+/* 원형 파동만 남김: 테두리 빛·빛 번짐 레이어는 그리지 않음 */
+.gcard__iri, .gcard__halo { display: none; }
+/* 물결·빛 번짐은 프레임(둥근 모서리) 안에서만 — clip content */
+.gcard__glass { overflow: hidden; }
+
+.gcard__iri,
+.gcard__halo {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+/* 선명한 테두리 빛: 흐르는 빛 띠 + 커서 쪽 강한 빛 → 굴절로 물결처럼 휘고 밖으로 번짐 */
+.gcard__iri {
+  filter: url(#rimWave) drop-shadow(0 0 3px rgba(244, 240, 232, 0.9)) drop-shadow(0 0 10px rgba(244, 240, 232, 0.6));
+}
+/* 두꺼운 빛 번짐: 같은 빛을 넓게, 크게 흐림 */
+.gcard__halo { filter: url(#rimWave) blur(8px); opacity: 0.9; }
+.gcard__iri::before,
+.gcard__halo::before,
+.gcard__glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.gcard__iri::before {
+  padding: 2px;
+  background:
+    radial-gradient(circle 110px at var(--mx, 50%) var(--my, 50%),
+      #f4f0e8 0%, rgba(244, 240, 232, 0.85) 25%, rgba(244, 240, 232, 0.35) 55%, rgba(244, 240, 232, 0) 100%),
+    conic-gradient(from var(--ang),
+      rgba(244, 240, 232, 0) 0deg, rgba(244, 240, 232, 0.95) 30deg, rgba(184, 201, 135, 0.4) 60deg, rgba(244, 240, 232, 0) 90deg,
+      rgba(244, 240, 232, 0) 120deg, rgba(244, 240, 232, 0.8) 150deg, rgba(184, 201, 135, 0.35) 180deg, rgba(244, 240, 232, 0) 210deg,
+      rgba(244, 240, 232, 0) 240deg, rgba(244, 240, 232, 0.9) 275deg, rgba(184, 201, 135, 0.4) 305deg, rgba(244, 240, 232, 0) 335deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+.gcard__halo::before {
+  padding: 9px;
+  background:
+    radial-gradient(circle 150px at var(--mx, 50%) var(--my, 50%),
+      rgba(244, 240, 232, 0.9), rgba(244, 240, 232, 0.5) 35%, rgba(244, 240, 232, 0.15) 65%, rgba(244, 240, 232, 0) 100%),
+    conic-gradient(from calc(var(--ang) * -1 + 40deg),
+      rgba(244, 240, 232, 0) 0deg, rgba(244, 240, 232, 0.6) 45deg, rgba(244, 240, 232, 0) 100deg,
+      rgba(244, 240, 232, 0) 180deg, rgba(244, 240, 232, 0.55) 230deg, rgba(244, 240, 232, 0) 290deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+/* 빛나는 물결: 커서에서 둥근 동심원이 퍼져 나가며 사라짐 + 굴절로 일렁임 */
+.gcard__glass::after {
+  mix-blend-mode: screen;
+  background: repeating-radial-gradient(circle at var(--mx, 50%) var(--my, 50%),
+    rgba(244, 240, 232, 0) calc(var(--rip) + 0px),
+    rgba(244, 240, 232, 0.55) calc(var(--rip) + 8px),
+    rgba(244, 240, 232, 0) calc(var(--rip) + 17px),
+    rgba(244, 240, 232, 0) calc(var(--rip) + 34px));
+  -webkit-mask: radial-gradient(circle 130px at var(--mx, 50%) var(--my, 50%), #000 10%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+  mask: radial-gradient(circle 130px at var(--mx, 50%) var(--my, 50%), #000 10%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+}
+
+/* 상세 페이지 상단 Project/Next 바도 Figma 187:325 와 같은 402 × 52 */
+.detail #gnbBar, .detail #nextBar { height: 52px; padding-top: 0; padding-bottom: 0; }
+
+/* 컴포넌트 글자는 모두 Inverse (Figma --color-text-inverse: white) */
+.detail #gnbBar p, .detail #nextBar p, .dmenu .pbar, .get-btn > p { color: var(--color-text-inverse, #fff); }
+
+/* 상세 페이지 컴포넌트 그림자: 사진 위에 떠 있으므로 진짜 Multiply 로 — js/mulshadow.js 가
+   그림자만 그리는 레이어(.mul-shadows, mix-blend-mode: multiply)를 각 컴포넌트에 맞춰 그림. 원래 그림자는 끔 */
+body.is-detail [data-mul-shadow] { --tw-shadow: 0 0 #0000; }
+body.is-detail .dmenu .pbar[data-mul-shadow] { box-shadow: var(--glass-inner); }
+.mul-shadows {
+  position: fixed;
+  inset: 0;
+  z-index: 12;            /* 상세 페이지(10) 위, 메뉴(16) 아래 — 그림자는 상자 바깥에만 그려지므로 몸체를 가리지 않음 */
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.mul-shadows[hidden] { display: none; }
+.mul-shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-shadow: 5px 8px 8px 3px rgba(193, 193, 193, 0.5);   /* Figma P-1 drop shadow #C1C1C1 50% */
+  will-change: transform;
+}
+
+/* 컴포넌트 글자색 자동 대비 (js/contrast.js): 밝은 배경 → 검정, 어두운 배경 → 흰색, 부드럽게 전환 */
+[data-fg] { color: var(--fg) !important; transition: color 0.5s ease; }
+[data-fg] p,
+[data-fg] .roll__w,
+[data-fg] .pbar__label,
+[data-fg] .nav__label,
+[data-fg] .bar__label { color: inherit !important; transition: color 0.5s ease; }
+
+/* ---------- 상세 페이지 푸터 (Figma 256:4453 foot bar) ---------- */
+/* 화면 전체(폭 제한 없음)를 덮는 올리브 배경이 로딩 화면처럼 위에서 슬라이드인 (아래 radius 40) — js/detail.js
+   상세 페이지 안(Next 목록 14 아래, 본문 위)에 놓임 */
+.foot[hidden] { display: none; }
+.foot {
+  position: fixed;
+  inset: 0;
+  z-index: 13;
+  pointer-events: none;
+}
+.foot__frame {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-accent-olive, #b8c987);
+  border-radius: 0 0 40px 40px;
+  overflow: hidden;
+  transform: translate3d(0, calc(-100% - 40px), 0);   /* 화면 위에 숨김 (아래 radius 까지 다 가려지게) */
+  will-change: transform;
+}
+/* AHYUN (Figma 256:4562): 히어로와 같은 크기 — 원래 좌표 · 필터 · 메타볼 그대로 래퍼만 0.33631 축소 (#goo 와 같은 값)
+   화면 바닥 위 30 · 창 가운데. 본문 zoom 밖이라 자기 zoom 으로 402 × dk (화면 462 미만에서만 축소) */
+.foot__ahyun {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  width: 402px;
+  height: 73px;
+  margin: 0 auto;
+  zoom: var(--dk, 1);
+  transform: translateX(var(--dsbw, 0px));
+  pointer-events: none;
+}
+.foot .goo { left: 0; top: 0; transform-origin: 83.75px 81.875px; transform: translate(-83.75px, -81.875px) scale(0.33631); }
+/* Find me: 히어로 사이드 바와 같은 자리 · 크기 */
+.foot .foot__find { z-index: 1; }
+/* 예전 끝 프레임의 정적 AHYUN 그림은 푸터가 대신함 */
+.detail__end > div:has(> img[src*="30300"]) { display: none; }
+/* 푸터가 다 내려온 동안: 뒤가 단색(프레임 색)이라 미리 곱한 그림자 색 = multiply → 화면 전체 blend 레이어는 끔 (성능)
+   --foot-mul = 올리브 × #C1C1C1 (js/detail.js) */
+body.foot-down .mul-shadows { display: none; }
+body.foot-down [data-mul-shadow] { --tw-shadow: 5px 8px 8px 3px rgb(var(--foot-mul, 139 152 102) / 0.5); }
+body.foot-down .dmenu .pbar[data-mul-shadow] { box-shadow: 5px 8px 8px 3px rgb(var(--foot-mul, 139 152 102) / 0.5), var(--glass-inner); }
+
+/* =====================================================================
+   호버 광학 유리 (Optical Thick Glass) — 네비게이션 바 · 목록 패널 (js/optic.js) — 프로젝트 카드는 제외
+   마우스를 올린 만큼(--optic-h 0→1) 두꺼운 반투명 유리로 실체화 + 4단 빛 레이어
+   (Bloom · Liquid Shimmer · Specular · Internal Bleed). 평소엔 투명 + 애니메이션 정지
+   ===================================================================== */
+.optic-host {
+  isolation: isolate;                            /* 빛 레이어(z -1)가 호스트 배경 위·글자 아래에 */
+  overflow: visible !important;                  /* 뒤쪽 bloom 이 캡슐 밖으로 퍼지도록 (글자 굴림은 .roll 이 자름) */
+}
+.optic-host .roll { clip-path: inset(-4px -60px); }
+/* 목록 패널은 CSS :hover 로 */
+.optic-host--panel { transition: --optic-h 0.5s ease; }
+.optic-host--panel:hover { --optic-h: 1; }
+@property --optic-h { syntax: "<number>"; inherits: true; initial-value: 0; }
+/* 호버 동안 유리 덩어리 — 다중 블러 (바깥 backdrop + 몸체 반투명) */
+.optic-host.is-glass,
+.optic-host--panel:hover {
+  -webkit-backdrop-filter: blur(28px) saturate(1.35) !important;
+  backdrop-filter: blur(28px) saturate(1.35) !important;
+}
+/* 예전 호버 유리판·채움 레이어(물결 포함)는 광학 유리 호스트에선 쓰지 않음 */
+.optic-host .gcard__glass,
+.optic-host > .gcard__fill { display: none !important; }
+
+.optic,
+.optic > span,
+.optic__clip > span {
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.optic { inset: 0; z-index: -1; opacity: var(--optic-h, 0); }
+.optic > span { inset: 0; }
+/* 평소엔 멈춤, 호버 동안만 흐름 */
+.optic * { animation-play-state: paused !important; }
+.optic-host.is-glass > .optic *,
+.optic-host--panel:hover > .optic * { animation-play-state: running !important; }
+
+/* 0. 두께감 있는 유리 몸체: 베벨 엣지(위 밝은 날 · 아래 림) + 안쪽 깊이 음영 + 가장자리 두께 */
+.optic__body {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 38%, rgba(255, 255, 255, 0) 60%, rgba(255, 245, 181, 0.07) 100%);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 2px 3px -1px rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.28),
+    inset 0 -10px 16px -10px rgba(40, 36, 20, 0.16),
+    inset 0 12px 20px -14px rgba(255, 255, 255, 0.45),
+    inset 1px 0 0 0 rgba(255, 255, 255, 0.18),
+    inset -1px 0 0 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* 1. Ambient Bloom: 캡슐 뒤에서 숨 쉬듯 넓게 퍼지는 소프트옐로우 */
+.optic__bloom {
+  inset: -22px -40px !important;
+  border-radius: 999px !important;
+  background: radial-gradient(closest-side, rgba(255, 245, 181, 0.6), rgba(255, 245, 181, 0.2) 55%, rgba(255, 245, 181, 0) 100%);
+  filter: blur(26px);
+  animation: optic-breathe 6.8s cubic-bezier(0.42, 0.02, 0.28, 1) infinite;
+}
+.optic-host--panel .optic__bloom { inset: -30px -36px !important; border-radius: 60px !important; }
+@keyframes optic-breathe {
+  0%   { opacity: 0.55; transform: scale(0.94, 0.9); }
+  31%  { opacity: 0.85; transform: scale(1.03, 1.08); }
+  47%  { opacity: 0.75; transform: scale(1, 1.02); }
+  78%  { opacity: 0.95; transform: scale(1.06, 1.12); }
+  100% { opacity: 0.55; transform: scale(0.94, 0.9); }
+}
+
+/* 2. Liquid Shimmer: 톤온톤 그라디언트 3장이 서로 다른 속도·방향으로 유영 → 빛이 액체처럼 스침 */
+.optic__clip { inset: 0; overflow: hidden; }
+.optic__sh { mix-blend-mode: screen; will-change: transform; }
+.optic__sh--1 {
+  inset: -60% -30% !important;
+  background: radial-gradient(38% 46% at 30% 50%, rgba(255, 245, 181, 0.42), rgba(255, 245, 181, 0) 70%);
+  animation: optic-swim-1 9.3s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+}
+.optic__sh--2 {
+  inset: -80% -40% !important;
+  background: radial-gradient(30% 40% at 70% 55%, rgba(255, 252, 236, 0.5), rgba(255, 252, 236, 0) 72%);
+  animation: optic-swim-2 13.7s cubic-bezier(0.6, 0.02, 0.3, 0.98) infinite;
+}
+.optic__sh--3 {
+  inset: -50% -60% !important;
+  background: radial-gradient(22% 60% at 50% 50%, rgba(255, 250, 222, 0.34), rgba(255, 250, 222, 0) 72%);
+  animation: optic-swim-3 7.9s cubic-bezier(0.7, 0, 0.2, 1) infinite;
+}
+@keyframes optic-swim-1 {
+  0%   { transform: translate3d(-18%, 6%, 0) rotate(-4deg) scale(1); }
+  23%  { transform: translate3d(9%, -8%, 0) rotate(3deg) scale(1.12); }
+  41%  { transform: translate3d(22%, 4%, 0) rotate(1deg) scale(0.96); }
+  68%  { transform: translate3d(-4%, 10%, 0) rotate(-6deg) scale(1.08); }
+  100% { transform: translate3d(-18%, 6%, 0) rotate(-4deg) scale(1); }
+}
+@keyframes optic-swim-2 {
+  0%   { transform: translate3d(14%, -4%, 0) scale(1.05); }
+  37%  { transform: translate3d(-20%, 7%, 0) scale(0.92); }
+  52%  { transform: translate3d(-12%, -9%, 0) scale(1.15); }
+  86%  { transform: translate3d(18%, 3%, 0) scale(0.98); }
+  100% { transform: translate3d(14%, -4%, 0) scale(1.05); }
+}
+@keyframes optic-swim-3 {
+  0%   { transform: translate3d(-42%, 0, 0) scale(1, 0.8); opacity: 0; }
+  14%  { opacity: 1; }
+  58%  { transform: translate3d(36%, 2%, 0) scale(1.2, 1); opacity: 0.85; }
+  73%  { opacity: 0; }
+  100% { transform: translate3d(36%, 2%, 0) scale(1.2, 1); opacity: 0; }
+}
+
+/* 3. Specular Hot-spot: 1px 링 안에서 순백 코어가 맺혀 천천히 미끄러짐 (mask-composite) */
+.optic__rim {
+  padding: 1px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12) 45%, rgba(255, 245, 181, 0.3));
+}
+.optic__spec {
+  inset: -120% -30% !important;
+  border-radius: 0 !important;
+  background: radial-gradient(9% 22% at 26% 48%, #fff 0%, rgba(255, 255, 255, 0.95) 30%, rgba(255, 255, 255, 0) 100%);
+  animation: optic-spec 11.3s cubic-bezier(0.55, 0.05, 0.25, 1) infinite;
+  will-change: transform;
+}
+.optic__spec--b {
+  background: radial-gradient(6% 16% at 70% 52%, #fff 0%, rgba(255, 252, 230, 0.8) 35%, rgba(255, 255, 255, 0) 100%);
+  animation: optic-spec-b 15.9s cubic-bezier(0.4, 0, 0.35, 1) infinite;
+}
+@keyframes optic-spec {
+  0%   { transform: translate3d(0, -6%, 0); }
+  28%  { transform: translate3d(34%, -9%, 0); }
+  45%  { transform: translate3d(48%, 4%, 0); }
+  77%  { transform: translate3d(12%, 8%, 0); }
+  100% { transform: translate3d(0, -6%, 0); }
+}
+@keyframes optic-spec-b {
+  0%   { transform: translate3d(0, 7%, 0); opacity: 0.7; }
+  33%  { transform: translate3d(-30%, 9%, 0); opacity: 1; }
+  61%  { transform: translate3d(-48%, -5%, 0); opacity: 0.45; }
+  100% { transform: translate3d(0, 7%, 0); opacity: 0.7; }
+}
+
+/* 4. Internal Light Bleed: 외곽의 빛이 유리 안쪽 벽으로 번져 드는 굴절 (plus-lighter) */
+.optic__bleed {
+  inset: 0 !important;
+  mix-blend-mode: plus-lighter;
+  background:
+    radial-gradient(70% 90% at 50% 112%, rgba(255, 245, 181, 0.22), rgba(255, 245, 181, 0) 60%),
+    radial-gradient(28% 120% at -4% 50%, rgba(255, 245, 181, 0.17), rgba(255, 245, 181, 0) 70%),
+    radial-gradient(28% 120% at 104% 50%, rgba(255, 245, 181, 0.13), rgba(255, 245, 181, 0) 70%);
+  animation: optic-bleed 8.6s cubic-bezier(0.4, 0.1, 0.3, 1) infinite;
+}
+@keyframes optic-bleed {
+  0%, 100% { opacity: 0.7; }
+  38%      { opacity: 1; }
+  64%      { opacity: 0.55; }
+}
+
+/* 물방울 모핑(분리·드립) 동안엔 액체 레이어가 몸체를 그림 → 빛 레이어도 숨김 */
+.optic-host.is-liquid > .optic,
+.optic-host.is-drip > .optic,
+.optic-host.is-splitting > .optic { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .optic * { animation: none !important; }
+}
+
+/* 목록 프로젝트 카드: 호버 때 물리적 유리(굴절·베벨)와 '도잉' 떠오름만 — 원형 물결은 쓰지 않음 */
+.pcard > .gcard__glass::after,
+.next__list .gcard__glass::after { display: none; }
+
+/* ---------- 첫 Hello 화면: Scroll down (Figma 187:278 — PP Woodland Ultralight 26, #FFF5B5) ---------- */
+.scroll-hint {
+  position: fixed;
+  left: 50%;
+  /* Side bar(아래 30) 마지막 줄 Behance 와 글자 기준선(baseline)을 맞춤 — 26px 글자는 줄 상자 안 기준선이 2px 더 높아서 2 내림 */
+  bottom: 28px;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  z-index: 6;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: "PP Woodland", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 200;
+  font-size: 26px;
+  line-height: normal;
+  color: #fff5b5;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+/* 첫 Hello 화면에서만 — AHYUN 이 열리거나 프로젝트·상세 화면이면 숨김 */
+body.is-detail .scroll-hint { opacity: 0; }
+
+/* ---------- 히어로 (Figma 286:5979) ---------- */
+/* AHYUN: 396 × 68 로 작아져 가운데 (글자 왼쪽 위 402, 362). 원래 좌표·필터·메타볼은 그대로 두고 래퍼만 축소
+   (기준점 = 글자 왼쪽 위: 래퍼 여백 80 + 글자 시작 3.75 / 1.875 → 원래 스테이지 11, 307) */
+#goo {
+  transform-origin: 83.75px 81.875px;
+  transform: translate(391px, 30.34px) scale(0.33631);   /* Figma 187:289 — 글자 위 337.34 */
+}
+/* Hello I'm — 젖은 종이에 물이 스며들듯 나타남 (js/hero.js) */
+.hero-hi,
+.hero-craft,
+.hero-find {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
+  font-family: "PP Woodland", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 200;
+  font-size: 20px;
+  line-height: 20px;
+  color: #859e48;          /* Figma: #B8C987 multiply — 같은 색 배경 위라 미리 곱한 색 */
+  white-space: pre;
+  pointer-events: none;
+  opacity: 0;
+}
+.hero-hi { left: 0; width: 1200px; top: 277.34px; text-align: center; }
+/* Figma 187:289 Frame 181 — 네 줄 간격 10, 더 스크롤하면 한 줄씩 스며 나옴 (js/hero.js) */
+.hero-craft {
+  left: 0;
+  width: 1200px;
+  top: 445.66px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 1;               /* 줄마다 따로 나타남 */
+}
+.hero-craft p { margin: 0; opacity: 0; }
+/* 히어로 내용 묶음: 스테이지 배율과 무관하게 402 폭 그대로 (화면 462 미만에서만 비율 축소) — 스테이지 가운데 기준 */
+.hero-group {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1200px;
+  height: 800px;
+  pointer-events: none;
+  transform: scale(var(--nk, 1));
+  transform-origin: 600px 400px;
+}
+/* Figma 292:6730 Side bar — 화면(뷰포트) 왼쪽 아래 고정: 왼쪽 40 · 아래 30 */
+.hero-find {
+  position: fixed;
+  left: 40px;
+  bottom: 30px;
+  z-index: 6;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
+}
+.hero-find { white-space: nowrap; }
+.hero-find p { margin: 0; }
+.hero-find a { color: inherit; text-decoration: none; }
+.hero-find.is-on { pointer-events: auto; }
+body.is-detail #heroFind,
+.stage.is-project :is(.hero-hi, .hero-craft) { opacity: 0 !important; pointer-events: none; transition: opacity 0.5s ease; }
+/* 열린 Hello·분리 바는 화면 맨 위 GNB(높이 90, 바 가운데 → 위 19) 자리 — 스테이지가 축소·가운데 정렬돼도 (js/hero.js 가 --nav-y/--nav-dy 계산) */
+.split { transform: translateY(var(--nav-dy, 0px)); }
+/* 굴러갈 때 표면을 따라 위아래로 도는 광택 (평소엔 위쪽에 아주 옅게) */
+.nav__spec {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+.nav__spec::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -10px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 100%);
+  transform: translate3d(0, var(--spec-y, 0px), 0);
+  opacity: var(--spec-o, 0);
+}
+.nav > .nav__label { position: relative; }   /* 광택 위에 글자 */
+
+/* ---------- Side bar 링크 호버: 물방울 글자가 스며 오름 (AHYUN 등장과 같은 방식, js/drip.js) ---------- */
+.drip { position: relative; display: block; }
+.drip__glass {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;              /* 원래 글자와 같은 줄바꿈 */
+  color: rgb(244, 240, 232);
+  pointer-events: none;
+  opacity: 0;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Hello → Project 3D 원통 글자 (js/project.js) */
+#pbar .pbar__label { position: relative; display: inline-block; }
+.cyl { position: absolute; inset: -12px -40px; perspective: 38px; perspective-origin: 50% 50%; }   /* 가까운 원근 → 원통 왜곡이 크게 */
+.cyl__strip { position: absolute; left: 0; right: 0; top: 12px; text-align: center; white-space: nowrap; will-change: transform; }
+.cyl__ghost { visibility: hidden; }
+
+/* ---------- About (Figma 292:6742) — 프로젝트에서 더 스크롤하면 (js/about.js) ---------- */
+/* 프로젝트 바·목록과 같은 배율(Hello 폭)로 축소, 내용은 바(GNB 90) 아래에서 위로 스크롤됨 */
+.about[hidden] { display: none; }
+.about {
+  position: fixed;
+  inset: 0;
+  z-index: 4;               /* 프로젝트 바(.proj z5) 아래로 지나감 */
+  overflow: hidden;
+  pointer-events: none;
+}
+/* 위로 올라간 내용은 바(GNB 90) 뒤로 비치지 않게 그 위에서 옅어지며 사라짐
+   — mask 를 쓰면 안쪽 유리(피드백 카드)의 backdrop 흐림이 막혀 뒤가 그대로 비침 → 배경색 덮개로 */
+.about::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 112px;
+  z-index: 10;
+  background: linear-gradient(to bottom, rgb(184 201 135) 70px, rgb(184 201 135 / 0) 112px);
+  pointer-events: none;
+}
+.about__col {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 402px;             /* 상단 바·목록과 같은 402 고정 (좁으면 비율 축소) */
+  transform: translateX(-50%) translateY(var(--py, 0px)) scale(var(--ps, 1));
+  transform-origin: 50% 0;
+}
+.about__inner { padding: 130px 20px 80px; will-change: transform; }   /* GNB 90 + 위 40 (Figma 296:7145) · 아래 80 */
+.about [data-seep] { opacity: 0; }
+.about__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+  padding: 20px 0 40px;
+}
+.about__title,
+.about__h {
+  margin: 0;
+  font-family: "PP Woodland", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 200;
+  font-size: 40px;
+  line-height: normal;
+  color: #859e48;           /* Figma: #B8C987 multiply */
+}
+.about__title { text-align: center; width: 100%; }
+.about__h { align-self: stretch; }
+.about__text,
+.about__list li {
+  margin: 0;
+  font-family: "Pretendard Variable", Pretendard, sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 25px;
+  letter-spacing: 0.32px;
+  color: #859e48;
+}
+.about__text { width: 100%; }
+.about__careers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  padding: 20px 0;
+}
+/* Figma 316:7622 — 사진 자리 362 × 324 (위아래 40) 고정: 경력마다 액자 크기가 달라도 아래 목록이 움직이지 않음 */
+.about__photo-box {
+  width: 100%;
+  height: 324px;
+  margin-top: -20px;        /* Careers 제목과 사진 사이를 20 가까이 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* 유리 액자 (Figma 320:7677 P-1: 유리 · 그림자 5 8 8 3 · 안쪽 빛) — 안쪽 16 여백에 사진(radius 40) */
+.about__shot {
+  position: relative;
+  box-sizing: content-box;
+  padding: 16px;
+  border-radius: 40px;
+  background: var(--glass-fill);
+  box-shadow: 5px 8px 8px 3px rgb(var(--shadow-mul) / 0.5), inset 2px 3px 7px 0 rgba(255, 245, 181, 0.5);
+  transition: width 0.6s cubic-bezier(0.34, 1.3, 0.64, 1), height 0.6s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.about__layer {
+  position: absolute;
+  inset: 16px;
+  border-radius: 40px;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.about__layer.is-on { opacity: 1; }
+.about__layer img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+/* 경계선 블러: 사진 한 장 — 사진 상자를 사방 --bleed(6.5 = 2 + 3σ) 만큼 키우고, 원래 사진 경계(radius 40)를 σ 1.5 로 흐린 SVG 마스크
+   → 사진 면적은 그대로, 경계 양쪽 2~3px 만 부드럽게 · 투명도 0 은 상자 끝보다 2px 안쪽에서 끝나 잘린 선이 남지 않음 (js/about.js) */
+.about__layer { --bleed: 6.5px; }
+.about__layer:not(.is-pad) .about__img { inset: calc(-1 * var(--bleed)); width: calc(100% + 2 * var(--bleed)); height: calc(100% + 2 * var(--bleed)); }
+.about__img { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+/* Luxury Fashion Graphic (Figma 323:7828): 효과 없이 Figma 그대로 — 212 자리 안 20 여백에 사진(172 × 174) + 사진의 안쪽 빛만 */
+.about__layer.is-pad .about__img {
+  inset: var(--pad); width: calc(100% - 2 * var(--pad)); height: calc(100% - 2 * var(--pad));
+  border-radius: 0; -webkit-mask-image: none; mask-image: none;
+}
+.about__layer.is-pad::after {
+  content: "";
+  position: absolute;
+  inset: var(--pad);
+  box-shadow: inset 2px 3px 7px 0 rgba(255, 245, 181, 0.5);
+  pointer-events: none;
+}
+/* Figma 320:7821 · 320:7802 — My Colleagues Say... · 기울어진 유리 피드백 카드 (위 카드와 60 씩 겹친 묶음, js/about.js) */
+.about__h--fb { width: 100%; }
+.about__fb {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  width: 100%;
+}
+.fb { position: relative; z-index: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-bottom: -60px; transform-origin: 50% 100%; }
+.fb:last-child { margin-bottom: 0; }
+/* 호버한 카드는 다른 카드를 모두 덮으며 맨 위로 (읽을 수 있게) — 다 내려앉은 뒤에만 호버를 받음 */
+.about__fb.is-live .fb:hover { z-index: 50; }
+.about__fb.is-live .fb__card { pointer-events: auto; cursor: default; }
+/* 피드백 카드: 부드러운 서리 유리 — 겹친 아래 카드 글자가 비치지 않도록 카드 자체에 강한 backdrop 흐림 (20)
+   평소: 옅은 연두빛 크림 25% · 얇은 반투명 흰 테두리 · 아주 옅은 바깥 그림자 + 가장자리가 살짝 밝아지는 안쪽 빛 */
+.fb__card {
+  position: relative;
+  flex: none;
+  box-sizing: border-box;
+  padding: 17.438px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(220, 232, 184, 0.25);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.5), inset 0 0 16px rgba(255, 255, 255, 0.3);
+  transition: scale 0.3s ease-out, border-color 0.3s ease-out, background-color 0.3s ease-out, box-shadow 0.3s ease-out;
+  will-change: transform;
+}
+/* 호버: About 버튼처럼 — 각도 그대로 살짝 커지고 · 선명한 1px 아이보리 테두리 · 한 톤 밝은 웜 크림 · 안쪽 하이라이트와 빛 · 깊은 그림자 */
+.about__fb.is-live .fb__card:hover {
+  scale: 1.03;
+  border-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(248, 253, 232, 0.4);
+  box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.15), inset 0 1.5px 2px rgba(255, 255, 255, 0.95), inset 0 -1px 2px rgba(255, 255, 255, 0.6), inset 0 0 24px rgba(240, 255, 200, 0.55);
+}
+.fb__card p {
+  position: relative;
+  margin: 0;
+  transform: skewX(1.05deg);
+  font-family: "Pretendard Variable", Pretendard, sans-serif;
+  font-weight: 300;
+  font-size: 12.16px;
+  line-height: 13.684px;
+  color: #000;
+}
+.fb__card.fb--l p { font-size: 13.95px; line-height: 15.694px; letter-spacing: 0.279px; }
+.about__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.about__list li { display: flex; justify-content: space-between; gap: 12px; }
+/* 좁을 때 긴 회사명은 두 줄로 (연도는 한 줄 · 오른쪽) */
+.about__list li > :first-child { min-width: 0; white-space: normal; }
+.about__list li > :last-child { flex-shrink: 0; white-space: nowrap; }
+/* Figma 296:7141 — Call me LIa :) 의 LIa 가 물방울 글자로 (js/about.js) */
+.about__intro { position: relative; }
+.lia { position: relative; display: inline-block; white-space: pre; text-align: center; vertical-align: top; }
+.lia__text { display: inline-block; }
+.lia__drop {
+  position: absolute;
+  left: calc(50% - 34.5px);  /* 글자 상자(이미지 안 6 + 57/2)를 LIa 자리 가운데에 — 위치는 js/about.js 가 줄 높이로 맞춤 */
+  top: -3px;
+  width: 78.29px;
+  height: 54.36px;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+/* 강조 글자: Side bar 링크와 같은 물방울 이펙트 — 스크롤로 스며 오름 */
+.drip--inline { display: inline-block; }
+
+/* Careers 줄: 호버하면 Side bar 링크와 같은 물방울 글자 (js/drip.js) — 레이어는 클릭을 통과시키되 줄만 받음 */
+.about__careers.is-live .about__list li { pointer-events: auto; }
+
+/* Side bar 호버 화살표 (Figma 286:5962 — 22.5 × 15.5, 글자 왼쪽 간격 5) */
+.drip__arrow {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 22.5px;
+  height: 15.5px;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.drip__ink, .drip__glass { will-change: transform; }
+
+/* Side bar 메타볼 커서 방울 (js/drip.js) — 유리 글자와 같은 필터 안에서 끈적하게 이어짐 */
+.drip__drop {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgb(255, 0, 0);   /* 필터가 글자와 구분하는 표식 색 — 화면에는 유리로만 그려짐 */
+  transform: scale(0);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ---------- 페이지 표시 (Figma 303:7250) — 뷰포트 왼쪽 30, 세로 가운데 고정 (최대 폭 적용 없음) ---------- */
+.pager {
+  position: fixed;
+  left: 30px;
+  top: calc(50% - 15px);    /* 6 × 3 + 간격 6 × 2 = 30 */
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.4s ease;
+}
+body.is-detail .pager { opacity: 0; pointer-events: none; }
+.pager__item {
+  position: relative;
+  width: 20px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.pager__item::before { content: ""; position: absolute; inset: -3px -10px -3px -10px; }   /* 누르기 쉬운 범위 */
+/* Default: #B8C987 multiply (같은 색 배경 위라 미리 곱한 색) · 흐림 0.5 · 10 × 6 */
+.pager__dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 6px;
+  border-radius: 5px;
+  background: #859e48;
+  filter: blur(0.5px);
+  opacity: 0.6;             /* Default 60% */
+  transform-origin: 0 50%;
+}
+/* Onpage: 유리 방울 20 × 6 (채움 #F4F0E8 20% · multiply 그림자 1/1/1) */
+.pager__drop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 6px;
+  border-radius: 5px;
+  background: rgba(244, 240, 232, 0.2);
+  box-shadow: 1px 1px 1px 0 rgb(var(--shadow-mul) / 0.5);
+  opacity: 0;
+  transform-origin: 0 50%;
+}
+
+/* Scroll down 문구 바뀜: 막대가 가운데 기준으로 늘어나고 줄어듦 (js/liquid.js) */
+#scrollHint .drip__glass { transform-origin: 50% 50%; }
+#scrollHint .hint-bar {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 50%;
+  height: 1.6px;            /* 글자 획 두께만큼 (PP Woodland Ultralight 26px) */
+  margin-top: -0.8px;       /* 글자 상자 세로 가운데 — 글자가 빨려 드는 선과 같은 자리 */
+  border-radius: 1px;
+  background: currentColor;
+  transform: scaleY(0);
+  pointer-events: none;
+}
+
+/* 상세 페이지 맨 위 바(프로젝트 이름 · Next)와 Next 목록: 402 고정, 화면 462 미만에서만 축소 (본문 zoom 과 따로) */
+.detail .detail__gnb { zoom: var(--dgz, 1); top: var(--dtop, 0px); left: calc(50% + var(--dsbw, 0px)); }   /* 본문(zoom) 안 · 창 전체 폭 가운데 */
+.detail > .next,
+.detail .next { zoom: var(--dk, 1); top: calc(var(--dtop, 0px) + 91px); left: calc(50% + var(--dsbw, 0px)); }   /* 본문 밖(#detail 바로 아래)으로 옮겨져 있음 */
+.detail__root .next { zoom: var(--dgz, 1); }
+.dmenu { zoom: var(--dk, 1); }
+
+/* ---------- 상세 페이지 차례로 슬라이드 업 (North Face 3D 렌더 · RealWorld Work Flow) — js/detail.js ---------- */
+/* 상세 페이지 프레임이 스크롤하면 나오는 것과 같은 움직임(120 아래에서 스프링으로 떠오르며 나타남)을 카드마다 차례로 */
+.domino__tile { transform: translate3d(0, 120px, 0); opacity: 0; will-change: transform, opacity; }
+/* 아래 줄 카드가 떠오르는 동안 묶음 밖(다음 섹션 자리)으로 내려가 있어도 다음 섹션에 가려 잘리지 않게 위에 그림 */
+.detail__root > .nf-renders,
+.detail__root > .rw-flow { position: relative; z-index: 2; }
+.domino__tile.is-up { transform: none; opacity: 1; will-change: auto; }
+
+/* Figma 256:5439 — 3열 2줄, 간격 20, 2000:1125, radius 20 */
+.nf-renders {
+  width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.nf-renders .domino__tile { position: relative; aspect-ratio: 2000 / 1125; border-radius: 20px; overflow: hidden; }
+.nf-renders img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; max-width: none; }
+
+/* Figma 214:2135 Work Flow — 흰 카드 radius 40, 안쪽 80 / 60, 간격 40 */
+.rw-flow {
+  width: 1200px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 80px 60px;
+  border-radius: 40px;
+  background: #fff;
+}
+.rw-flow__title {
+  margin: 0;
+  font-family: "PP Woodland", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 200;
+  font-size: 26px;
+  line-height: normal;
+  color: var(--color-text-primary, #000);
+}
+.rw-flow__row { display: flex; align-items: center; justify-content: center; width: 100%; }
+.rw-flow__item { width: 270px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.rw-flow__item p,
+.rw-flow__step p {
+  margin: 0;
+  position: relative;
+  font-family: "Pretendard Variable", Pretendard, sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 25px;
+  letter-spacing: 0.32px;
+  color: #000;
+  white-space: nowrap;
+}
+.rw-flow__img { position: relative; width: 100%; aspect-ratio: 1440 / 1080; overflow: hidden; }
+.rw-flow__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; max-width: none; }
+.rw-flow__img--ai { aspect-ratio: 1288 / 910; }
+.rw-flow__img--ai img { left: -7.74%; top: -11.34%; width: 115.48%; height: 122.59%; inset: auto; }
+.rw-flow__steps { display: flex; gap: 28.313px; width: 100%; align-items: flex-start; }
+.rw-flow__step {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 0;
+  aspect-ratio: 341.125 / 453.696;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.rw-flow__step img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; max-width: none; }
+
+/* Wellow: 그림자까지 다시 뽑은 섹션 이미지(-full)는 아래·옆 섹션 이미지에 그림자가 가려지지 않게 위에 그림 */
+.detail__root > :has(> img[src*="-full.png"]) { position: relative; z-index: 1; }
+
+/* ShuttleFIT 키워드 타일 (Figma 148:4235 — Pretendard Bold 26, 가운데) */
+.sf-key { margin: 0; width: 100%; text-align: center; font-family: "Pretendard Variable", Pretendard, sans-serif; font-weight: 700; font-size: 26px; line-height: normal; }
+/* Wellow 키워드 타일 (Figma 171:10523 — 920 폭, 위아래 80, 간격 40, 가운데 정렬) */
+.wl-keys { width: 920px; display: flex; gap: 40px; align-items: center; padding: 80px 0; box-sizing: border-box; height: 360px; }
+.wl-keys img { display: block; max-width: none; border-radius: 20px; }
+/* RealWorld White Panel (Figma 226:3050 — 1200 × 1970, 흰 판 radius 40) */
+.rw-panel { width: 1200px; height: 1970px; background: #fff; border-radius: 40px; }
+.rw-panel img { position: absolute; display: block; max-width: none; }
+/* RealWorld 키워드 타일 (Figma 227:3316 — 920 폭, 아래 80, 간격 40) */
+.rw-keys { width: 920px; display: flex; gap: 40px; align-items: flex-start; padding-bottom: 80px; }
+.rw-keys img { display: block; max-width: none; border-radius: 20px; }
+
+/* ---------- 상세 페이지 페이지 표시 (Figma 122:933 Frame 186) — 메인과 같은 모양, 상세 페이지에서만 ---------- */
+.pager--detail[hidden] { display: none; }
+body.is-detail .pager.pager--detail { opacity: 1; pointer-events: auto; z-index: 14; }
+body:not(.is-detail) .pager--detail { display: none; }
+/* Default: 상세 페이지 배경색(#F9F8F4) multiply 색(#F3F1E9)에서 명도 20% 더 어둡게 → #C2C1BA */
+.pager--detail .pager__dot { background: #c2c1ba; }
+/* Onpage: 그림자 색을 15% 더 진하게 (#BCBCB9 → #A0A09D) */
+.pager--detail .pager__drop { box-shadow: 1px 1px 1px 0 rgb(160 160 157 / 0.5); }
+/* 칸 수(3 · 4)가 달라도 세로 가운데 */
+.pager.pager--detail { top: 50%; transform: translateY(-50%); }
+/* 표지를 지나기 전·되돌아갈 때는 점들이 쏙 들어가 있음 (js/detail.js 가 하나씩 튀어나오게) */
+.pager--detail .pager__item { transform-origin: 0 50%; }
+
+/* ---------- 상세 페이지 되돌아가기 방울 (Figma 33:743) — js/detail.js ---------- */
+.dback[hidden] { display: none; }
+.dback {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: rgba(244, 240, 232, 0.2);
+  box-shadow: var(--glass-drop), var(--glass-inner);
+  pointer-events: auto;
+  cursor: pointer;
+  will-change: transform;
+}
+.dback { visibility: hidden; pointer-events: none; }
+.dback.is-shown { visibility: visible; pointer-events: auto; }
+.dback.is-liquid { background: transparent; box-shadow: none; }   /* 채움·그림자는 Gooey 레이어가, 서리 흐림(backdrop)은 그대로 */
+/* 화살표: 늘 DOM 에 있고, 물방울이 떨어져 나올 때 opacity 0 · scale .5 · −180° → 1 · 1 · 0° 로 부드럽게 돌며 나타남 */
+.dback__arrow {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 13px;
+  opacity: 0;
+  transform: scale(0.5) rotate(-180deg);
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.dback.is-arrow .dback__arrow { opacity: 1; transform: scale(1) rotate(0deg); }
+.dback__ico { transform: scaleX(-1); }   /* 왼쪽을 가리킴 */
+.dback__ico {
+  display: block;
+  width: 22px;
+  height: 13px;
+  background: currentColor;                 /* 바 글자와 같은 자동 대비 색 (js/contrast.js) */
+  -webkit-mask: url(../assets/back-arrow.svg) center / 100% 100% no-repeat;
+  mask: url(../assets/back-arrow.svg) center / 100% 100% no-repeat;
+}
+.dback { color: var(--color-text-inverse, #fff); }
+#dback.is-next .dback__ico { background: #fff !important; }   /* Next(푸터) 에서 나오는 화살표는 흰색 */
+/* 통유리 그림자 레이어 (js/detail.js): 화면 맨 위 multiply — 상세 페이지 · 푸터 어디서든 같은 그림자, 잘리지 않음 */
+.dback-sh-layer { position: fixed; inset: 0; z-index: 12; pointer-events: none; mix-blend-mode: multiply; overflow: visible; }
+body:not(.is-detail) .dback-sh-layer { display: none; }
+body.dback-going .dback-sh-layer { opacity: 0; }
+/* 푸터가 덮인 동안(일반 multiply 레이어가 꺼짐): 물방울 버튼도 바처럼 미리 곱한 색 그림자 — 바와 합쳐져 있는 동안은 없음 */
+body.foot-down #dback[data-mul-shadow] { box-shadow: 5px 8px 8px 3px rgb(var(--foot-mul, 139 152 102) / 0.5); }
+body.foot-down #dback.is-unified, body.foot-down #dback.is-joined { box-shadow: none !important; }
+/* Gooey 배경 모양 레이어: 같은 단색 불투명 모양 둘만 — 흐림·테두리·반투명 없음, 필터는 이 감싸개에만 (backdrop · overflow 없음) */
+.dback__goo {
+  position: absolute;
+  z-index: 0;
+  /* 테두리 빛 · 그림자는 감싸개 필터에서만 (자식 모양에는 없음 — 이음매가 생기지 않게) */
+  filter: url(#gooey-effect) drop-shadow(0 0 1px rgba(255, 255, 255, 0.8)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.2));
+  pointer-events: none;
+  opacity: 0;
+}
+.detail #gnbBar { z-index: 1; }   /* 글자(콘텐츠 레이어)는 Gooey 레이어 위 */
+.dback__goo.is-on { opacity: 1; transition: none; }
+.dback__blob { position: absolute; background: #ddd6c7; border: 0; box-shadow: none; border-radius: 20px; will-change: transform; transform-origin: 50% 50%; }   /* 바 · 물방울 같은 크림 단색 */
+/* 원통(글자) · 구(화살표) 띠 */
+.bk-cyl { position: absolute; inset: 0; perspective: 38px; pointer-events: none; }
+.bk-cyl .bk-cyl__strip { position: absolute; left: 0; top: 0; width: 22px; height: 13px; will-change: transform; }
+.bk-cyl--label { inset: -12px -40px; }
+.bk-cyl--label .bk-cyl__strip { left: 0; right: 0; width: auto; height: auto; top: 12px; text-align: center; white-space: nowrap; }
+/* 화살표를 누르면 처음 화면 배경이 위에서 슬라이드인 */
+.dback-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 14;              /* 상세 페이지 안 — 위 바(15) 뒤, 본문 위 */
+  background: #b8c987;
+  transform: translate3d(0, -110%, 0);
+  pointer-events: none;
+}
+.bk-label { position: absolute; left: -40px; right: -40px; top: 0; text-align: center; white-space: nowrap; }
+/* 배경이 덮는 동안 본문 그림자 레이어는 숨기고, 위 바는 자기 그림자로 */
+body.dback-going .mul-shadows { opacity: 0; }
+
+body.dback-going .pager--detail { opacity: 0 !important; transition: opacity 0.3s ease; }
+
+/* 되돌아가기 방울 목 (Figma 312:7576 Subtract) — 바·방울과 같은 서리 유리 (js/detail.js 가 오목한 허리 모양을 clip-path 로) */
+.dback { transform-origin: 100% 50%; }   /* 바 왼쪽 끝에서 가로로 자라 나옴 */
+.dback__neck {
+  position: absolute;
+  z-index: 0;
+  display: none;
+  background: rgba(244, 240, 232, 0.2);
+  pointer-events: none;
+}
+.dback__neck-sh {
+  position: absolute;
+  z-index: 0;
+  display: none;
+  filter: blur(4px);
+  pointer-events: none;
+}
+/* 통유리 (js/detail.js): 목이 이어진 동안 바 · 목 · 물방울을 하나의 경로로 — 실제 바 · 물방울은 글자 · 화살표만 */
+.dback__uni { position: absolute; z-index: 0; display: none; background: rgba(244, 240, 232, 0.2); pointer-events: none;
+  backface-visibility: hidden; }   /* clip-path 는 합성 레이어로 올리지 않음 (올리면 Chrome 이 마스크로 래스터해 외곽 안티앨리어싱이 거칠어짐) */
+/* 꿀렁이는 바 · 물방울: 변형되는 동안 서브픽셀 흔들림 · 가장자리 깨짐 없이 GPU 레이어에서 부드럽게 */
+.detail #gnbBar, #dback { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.dback__uni-light { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.dback__uni-shadow { pointer-events: none; }
+.detail__bar.is-unified > [aria-hidden],
+.detail__bar.is-unified > .pointer-events-none,
+.detail__bar.is-unified > .gcard__fill,
+#dback.is-unified > :not(.dback__arrow) { opacity: 0 !important; }
+.detail__bar.is-unified, #dback.is-unified { background: transparent !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.dback__neck-light { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.dback__neck-shadow { pointer-events: none; }
+.dback__neck-sh i { position: absolute; inset: 0; background: rgb(var(--shadow-mul) / 0.5); }
+/* 물방울 버튼: 바와 같은 유리 — 채움 · 안쪽 빛은 바에서 복제한 층이, 그림자는 multiply 레이어가 */
+#dback { background: transparent; box-shadow: none; }
+#dback .dback__arrow { z-index: 1; }
+/* 방울 그림자는 multiply 레이어(js/mulshadow.js)가 그림 — 자기 바깥 그림자는 끄고 안쪽 빛만 */
+
+/* ---------- 화면 폭 462 이하 (Figma 333:7975 About-M) ----------
+   · 왼쪽 Find me 사이드바는 없애고, About 의 Careers 아래(.about__find)에서 보여 줌
+   · 페이지 표시(메인 · 상세): 왼쪽 30 · 아래 30 고정
+   · 푸터의 Find me: AHYUN 30 위 (AHYUN 은 바닥 위 30 × dk, 높이 73 × dk) */
+.about__find { display: none; }
+@media (max-width: 462px) {
+  #heroFind { display: none !important; }
+  .about__find {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 80px;
+    font-family: "PP Woodland", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 200;
+    font-size: 20px;
+    line-height: normal;
+    color: #859e48;           /* 사이드바와 같은 multiply 색 */
+    white-space: nowrap;
+  }
+  .about__find p { margin: 0; }
+  .about__find a { color: inherit; text-decoration: none; }
+  .about__find.is-live a { pointer-events: auto; }
+  /* 끝까지 스크롤했을 때 Find me 가 아래 인디케이터(바닥 30 + 높이 30) · Scroll down 과 겹치지 않고 그 30 위에서 끝나도록
+     — 화면 바닥에서 90 (내용은 --ps 배율로 줄어 있으므로 나눠 둠) */
+  .about__inner { padding-bottom: calc(90px / var(--ps, 1)); }
+  .pager, .pager.pager--detail { top: auto; bottom: 30px; transform: none; }
+  .foot .foot__find { left: 30px; bottom: calc(103px * var(--dk, 1) + 30px); }
+}
+
+/* ---------- 비밀번호로 잠근 프로젝트 (Figma 333:8060 loding page) — js/lock.js ----------
+   로딩 화면 가운데에서 바가 위 · 아래로 갈라지고 왼쪽에서 화살표 방울이 나옴. 402 고정 · 화면 462 미만에서는 비율 축소(--dk) */
+/* 폭은 창 전체(100vw) — 상세 페이지 스크롤바가 있어도 로딩 바(left 50vw)와 같은 가운데 */
+.lockgate { position: fixed; left: 0; top: 0; width: 100vw; height: 100%; z-index: 31; display: grid; place-items: center; pointer-events: none; transition: opacity 0.45s ease; }
+.lockgate.is-leaving { opacity: 0; }
+.lockgate__box { position: relative; width: 402px; height: 52px; zoom: var(--dk, 1); }
+.lockgate__goo { position: absolute; left: -120px; top: -120px; width: 642px; height: 292px; filter: url(#splitGoo); pointer-events: none; transition: opacity 0.3s ease; }
+.lockgate__goo.is-done { opacity: 0; }
+.lockgate__blob, .lockgate__neck { position: absolute; left: 0; top: 0; background: #fff; will-change: transform; }
+.lockgate__blob { width: 402px; height: 52px; border-radius: 20px; transform-origin: 50% 50%; }
+.lockgate__blob--bub { width: 54px; }
+.lockgate__neck { width: 100px; height: 100px; border-radius: 50%; transform: scale(0); }
+.lockgate__bar, .lockgate__bub {
+  position: absolute; left: 0; top: 0; height: 52px; box-sizing: border-box; margin: 0; padding: 0; border: 0;
+  border-radius: 20px; display: flex; align-items: center; justify-content: center;
+  color: inherit; font: inherit; background: var(--glass-fill-light);
+  box-shadow: 5px 8px 8px 3px rgb(var(--lg-mul, var(--shadow-mul)) / 0.5), var(--glass-inner);   /* multiply: 배경 × #C1C1C1 */
+  -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+  transform-origin: 50% 50%; will-change: transform; pointer-events: auto;
+}
+.lockgate__bar { width: 402px; }
+.lockgate__bub { width: 54px; cursor: pointer; text-decoration: none; }
+.lockgate__bar[data-bar="bot"] { cursor: pointer; }
+.lockgate__bar.is-liquid, .lockgate__bub.is-liquid { background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.lockgate__bub.is-liquid { pointer-events: none; }
+.lockgate__label { display: block; width: 100%; padding: 0 10px; box-sizing: border-box; text-align: center; white-space: nowrap;
+  font-family: "PP Woodland", "Helvetica Neue", Arial, sans-serif; font-weight: 200; font-size: 26px; line-height: normal; }
+.lockgate__lock { display: inline-block; width: 20px; height: 20px; vertical-align: middle; background: currentColor;
+  -webkit-mask: url(../assets/lock.svg) center / 100% 100% no-repeat; mask: url(../assets/lock.svg) center / 100% 100% no-repeat; }
+.lockgate__arrow { display: block; width: 22px; height: 13px; opacity: 0; transform: scale(0.5) rotate(-180deg);
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.lockgate__bub.is-arrow .lockgate__arrow { opacity: 1; transform: none; }
+.lockgate__ico { display: block; width: 22px; height: 13px; background: currentColor; transform: scaleX(-1);
+  -webkit-mask: url(../assets/back-arrow.svg) center / 100% 100% no-repeat; mask: url(../assets/back-arrow.svg) center / 100% 100% no-repeat; }
+/* 비밀번호 입력: 자물쇠 바를 누르면 그 자리에서 */
+.lockgate__input { position: absolute; inset: 0; width: 100%; height: 100%; box-sizing: border-box; padding: 0 20px; border: 0; outline: 0;
+  background: transparent; color: inherit; text-align: center; font-family: "Pretendard Variable", Pretendard, sans-serif; font-weight: 300;
+  font-size: 18px; letter-spacing: 0.3em; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; caret-color: currentColor; }
+.lockgate__input::placeholder { color: currentColor; opacity: 0.6; letter-spacing: 0.04em; }
+.lockgate__bar.is-typing .lockgate__input { opacity: 1; pointer-events: auto; }
+.lockgate__bar .lockgate__label { transition: opacity 0.3s ease; }
+.lockgate__bar.is-typing .lockgate__label, .lockgate__bar.is-open .lockgate__label { opacity: 0; }
+.lockgate__bar[data-bar="top"] .lockgate__label { transition: font-size 0.55s cubic-bezier(0.22, 1, 0.36, 1); }
+.lockgate__box.is-narrow .lockgate__bar[data-bar="top"]:not(.is-merging) .lockgate__label { font-size: 21px; }

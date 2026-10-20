@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Wellow Interaction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,700&display=swap" />
+  <link rel="stylesheet" href="css/interaction.css?v=51" />
+</head>
+<body>
+  <!-- Figma 67:1636 "Stanby" — 390×788 iPhone / Safari -->
+  <!-- iPhone 프레임 (CSS 베젤 + 노치 + 측면 버튼) -->
+  <div class="device" id="device">
+    <span class="device__btn device__btn--silent" aria-hidden="true"></span>
+    <span class="device__btn device__btn--vol-up" aria-hidden="true"></span>
+    <span class="device__btn device__btn--vol-down" aria-hidden="true"></span>
+    <span class="device__btn device__btn--power" aria-hidden="true"></span>
+    <span class="device__notch" aria-hidden="true"></span>
+  <main class="phone" data-mode="wellow" aria-label="Wellow 인터랙션 화면">
+    <!-- 59:795 Status bar -->
+    <div class="statusbar">
+      <span class="statusbar__time">9:41</span>
+      <span class="statusbar__icons">
+        <img src="assets/interaction/cellular.svg" width="18" height="12" alt="" />
+        <img src="assets/interaction/wifi.svg" width="16" height="12" alt="" />
+        <img src="assets/interaction/battery.svg" width="25" height="12" alt="" />
+      </span>
+    </div>
+
+    <!-- 59:812 SafariBar -->
+    <div class="safaribar">
+      <div class="safaribar__field">
+        <span class="safaribar__aa" aria-hidden="true"><i>A</i><b>A</b></span>
+        <span class="safaribar__url">
+          <img src="assets/interaction/lock.svg" width="11" height="13" alt="" />
+          <span>medium.com/no-time/</span>
+        </span>
+        <img class="safaribar__reload" src="assets/interaction/reload.svg" width="12" height="12" alt="" />
+      </div>
+    </div>
+
+    <!-- 67:1651 Wellow floating button -->
+    <!-- Figma 67:1651 / 96:1780 — 파란 knob 이 선택한 모드로 스르륵 이동 -->
+    <div class="wellow-pill" role="tablist" aria-label="Wellow 모드">
+      <span class="wellow-pill__knob" aria-hidden="true"></span>
+      <button class="wellow-pill__item" role="tab" aria-selected="false" data-mode="quote">
+        <span class="pill-icon pill-icon--quote" aria-hidden="true">
+          <span class="pill-icon__img pill-icon__img--off"><img src="assets/interaction/quote-1.svg" alt="" /><img src="assets/interaction/quote-2.svg" alt="" /></span>
+          <span class="pill-icon__img pill-icon__img--on"><img src="assets/interaction/quote-1-white.svg" alt="" /><img src="assets/interaction/quote-2-white.svg" alt="" /></span>
+        </span>
+        <span class="wellow-pill__label">Quote</span>
+      </button>
+      <button class="wellow-pill__item is-active" role="tab" aria-selected="true" data-mode="wellow">
+        <!-- 가로 오도미터: Wellow 면 ↔ Language 면(96:2562)이 옆으로 굴러가며 바뀜 -->
+        <span class="odo">
+          <span class="odo__face odo__face--wellow">
+            <span class="pill-icon pill-icon--logo" aria-hidden="true">
+              <span class="pill-icon__img pill-icon__img--off"><img src="assets/interaction/logo-blue.svg" alt="" /></span>
+              <span class="pill-icon__img pill-icon__img--on"><img src="assets/interaction/logo.svg" alt="" /></span>
+            </span>
+            <span class="wellow-pill__label">Wellow</span>
+          </span>
+          <span class="odo__face odo__face--lang" aria-hidden="true">
+            <span class="pill-icon pill-icon--lang"><img src="assets/interaction/language-white.svg" alt="" /></span>
+            <span class="wellow-pill__label">Language</span>
+          </span>
+          <span class="odo__face odo__face--power" aria-hidden="true">
+            <span class="pill-icon pill-icon--lang"><img src="assets/interaction/onoff-white.svg" alt="" /></span>
+            <span class="wellow-pill__label">Turn off</span>
+          </span>
+        </span>
+      </button>
+      <button class="wellow-pill__item" role="tab" aria-selected="false" data-mode="full">
+        <span class="pill-icon pill-icon--fulltext" aria-hidden="true">
+          <span class="pill-icon__img pill-icon__img--off"><img src="assets/interaction/fulltext-1.svg" alt="" /><img src="assets/interaction/fulltext-2.svg" alt="" /></span>
+          <span class="pill-icon__img pill-icon__img--on"><img src="assets/interaction/fulltext-1-white.svg" alt="" /><img src="assets/interaction/fulltext-2-white.svg" alt="" /></span>
+        </span>
+        <span class="wellow-pill__label">Full text</span>
+      </button>
+    </div>
+
+    <!-- 96:889 Article (이미지 대신 실제 텍스트 — 단어별 Press 하이라이트) -->
+    <article class="article" id="article">
+      <p>Depending on the language, it generally took me <strong>two to four months</strong> of focused learning to become comfortable enough to hold conversations, understand native content, and continue learning independently. Those months, however, were anything but easy. They demanded <strong>three to four dedicated hours of practice almost every single day</strong>, even after long school hours, and remaining consistent even when progress felt almost invisible.</p>
+      <p>There were days when I replayed the same conversation repeatedly because I could not understand a single phrase, rewrote sentences until they sounded natural, and revised the same vocabulary before it finally stayed in my memory. Every language challenged me differently. Spanish tested my listening skills, Sanskrit pushed me to overcome the fear of speaking, while French demanded discipline and consistency.</p>
+      <p>Over the years, I have also cleared several language proficiency examinations on my first attempt. Looking back now, I realise that my progress was never built on extraordinary intelligence. It was built on small habits that I repeated every single day until they quietly became part of who I am.</p>
+    </article>
+
+    <!-- Figma 67:1700 — 단어 상세 카드 (단어를 누른 채 위로 스와이프 → Wellow 버튼에서 덜컹 하고 나옴) -->
+    <section class="word-card" id="wordCard" aria-hidden="true" aria-label="단어 상세">
+      <div class="word-card__head">
+        <div class="word-card__title">
+          <span class="word-card__word" id="cardWord"></span>
+          <span class="word-card__meaning" id="cardMeaning"></span>
+        </div>
+        <div class="word-card__divider"></div>
+        <p class="word-card__senses" id="cardSenses"></p>
+      </div>
+      <div class="word-card__synonyms" id="cardSynonyms">
+        <div class="word-card__label"><span>Synonyms</span></div>
+        <div class="word-card__chips" id="cardChips"></div>
+      </div>
+    </section>
+
+    <!-- Figma 96:2538 — Wellow 를 한 번 더 누르면 나오는 설정 버튼 -->
+    <div class="wellow-settings" id="wellowSettings" aria-hidden="true" aria-label="Wellow 설정">
+      <button class="wellow-settings__item wellow-settings__item--language" type="button" aria-label="번역 언어">
+        <img src="assets/interaction/language.svg" alt="" />
+        <span class="wellow-settings__label" aria-hidden="true">Language</span>
+      </button>
+      <button class="wellow-settings__item wellow-settings__item--power" type="button" aria-label="Wellow 끄기">
+        <img src="assets/interaction/onoff.svg" alt="" />
+        <span class="wellow-settings__label" aria-hidden="true">Turn off</span>
+      </button>
+    </div>
+
+    <!-- Figma 96:2618 — 언어 패널 (설정의 화살표를 누르면 등장) -->
+    <div class="wellow-lang" id="wellowLang" aria-hidden="true" aria-label="번역 언어">
+      <!-- 96:2647 원문 언어 / 204:1964 누르면 아래로 언어 목록이 쫘르륵 펼쳐짐 -->
+      <div class="wellow-lang__group" data-role="source">
+        <button class="wellow-lang__row" type="button" aria-expanded="false" aria-label="원문 언어 바꾸기">
+          <span class="wellow-lang__mark" aria-hidden="true"><img src="assets/interaction/lang-icon.svg" alt="" /></span>
+          <span class="wellow-lang__fill"></span>
+          <span class="wellow-lang__text" data-value>Auto</span>
+        </button>
+        <div class="wellow-lang__list" role="listbox" aria-label="원문 언어"></div>
+      </div>
+      <div class="wellow-lang__group" data-role="target">
+        <button class="wellow-lang__row" type="button" aria-expanded="false" aria-label="번역 언어 바꾸기">
+          <span class="wellow-lang__text" data-value>한국어</span>
+          <span class="wellow-lang__fill"></span>
+          <span class="wellow-lang__mark wellow-lang__mark--flip" aria-hidden="true"><img src="assets/interaction/lang-icon.svg" alt="" /></span>
+        </button>
+        <div class="wellow-lang__list" role="listbox" aria-label="번역 언어"></div>
+      </div>
+    </div>
+
+    <!-- Figma 96:2826 — 끄기 확인 (설정의 전원을 누르면 등장, Yes · No 는 올리면 파랗게) -->
+    <div class="wellow-power" id="wellowPower" aria-hidden="true" role="dialog" aria-label="Wellow 끄기">
+      <div class="wellow-power__ask">
+        <p>Do you really turning off <span class="wellow-power__brand">Wellow?</span></p>
+      </div>
+      <div class="wellow-power__choices">
+        <button class="wellow-power__btn" type="button" data-answer="yes">Yes</button>
+        <button class="wellow-power__btn" type="button" data-answer="no">No</button>
+      </div>
+    </div>
+
+    <!-- Figma 96:2105 — Full text 프레임 (Full text 선택 0.8초 뒤 등장, 본문은 드래그해서 읽기) -->
+    <section class="fulltext" id="fulltext" aria-hidden="true" aria-label="전문 번역 (아래로 스와이프하면 요약 아이콘)">
+      <!-- 96:2232 — 패널을 아래로 스와이프하면 드러나는 아이콘 카드 -->
+      <div class="fulltext__tab">
+        <button class="fulltext__action" type="button" tabindex="-1">
+          <img src="assets/interaction/summarize.svg" width="22" height="22" alt="" />
+          <span>summarize</span>
+        </button>
+      </div>
+      <div class="fulltext__panel">
+        <header class="fulltext__head">
+          <h2 class="fulltext__title">"어떤 언어든 유창하게 말하고 싶나요? 이 5가지 매일의 습관을 시작해 보세요</h2>
+          <p class="fulltext__sub">수개월 동안 공부했는데도 여전히 말하기가 어렵다면, 이 습관들이 당신의 학습 방식을 바꿔놓을 수 있습니다.</p>
+          <p class="fulltext__meta">읽는 데 10분 소요 • 2026년 7월 28일</p>
+          <div class="fulltext__spacer"></div>
+        </header>
+        <div class="fulltext__body">
+          <div class="fulltext__scroll" id="fulltextScroll">
+            <p>저는 영어, 힌디어, 프랑스어, 스페인어, 산스크리트어에 능통하며, 16살 때는 영국식, 미국식, 인도식 영어 억양을 자연스럽게 넘나드는 법도 터득했습니다. 사람들이 이 이야기를 들을 때면 종종 놀라곤 하는데, 제가 가장 많이 받는 질문은 "어떻게 그렇게 어린 나이에 그렇게 많은 언어를 배웠나요?"입니다.</p>
+            <p>언어에 따라 다르지만, 대화가 가능하고 원어민의 콘텐츠를 이해하며 독립적으로 학습을 이어나갈 수 있을 만큼 편안해지기까지 보통 2~4개월의 집중적인 학습이 필요했습니다. 하지만 그 몇 달간의 시간은 결코 쉽지 않았습니다. 학교에서 긴 하루를 보낸 후에도 거의 매일 3~4시간씩 집중해서 연습해야 했고, 발전이 눈에 띄지 않는 것처럼 느껴질 때조차도 꾸준함을 유지해야 했습니다.</p>
+            <p>단 한 구절도 이해할 수 없어서 같은 대화를 반복해서 다시 듣고, 문장들이 자연스럽게 들릴 때까지 고쳐 썼으며, 마침내 내 기억에 남을 때까지 같은 어휘를 복습했던 날들도 있었습니다. 모든 언어는 저마다 다른 방식으로 저를 시험했습니다. 스페인어는 저의 듣기 실력을 시험했고, 산스크리트어는 말하기에 대한 두려움을 극복하도록 밀어붙였으며, 프랑스어는 규율과 일관성을 요구했습니다.</p>
+            <p>수년에 걸쳐 저는 여러 언어 능력 시험을 단번에 통과하기도 했습니다. 지금 돌아보면 제 발전이 결코 뛰어난 지능을 바탕으로 이루어진 것이 아니라는 것을 깨닫습니다. 그것은 완전히 저의 일상이 될 때까지 매일 하루도 빠짐없이 반복했던 작은 습관들 위에 세워진 것이었습니다.</p>
+            <p>다음은 저의 언어 학습 여정을 완전히 바꿔놓은 5가지 습관입니다.</p>
+          </div>
+          <div class="fulltext__fade" aria-hidden="true"></div>
+        </div>
+      </div>
+      <!-- Figma 96:2353 — 요약 페이지 (아이콘 카드를 본 뒤 더 아래로 스와이프하면 카드가 넘겨지며 등장) -->
+      <!-- 67:1880 — 요약 카드를 위로 스와이프하면 드러나는 아래쪽 아이콘 카드 (높이 275, 뒤집힌 탭) -->
+      <div class="fulltext__tab fulltext__tab--bottom">
+        <button class="fulltext__action fulltext__action--bottom" type="button" tabindex="-1">
+          <span class="pill-icon pill-icon--fulltext" aria-hidden="true"><img src="assets/interaction/fulltext-1-white.svg" alt="" /><img src="assets/interaction/fulltext-2-white.svg" alt="" /></span>
+          <span>Full text</span>
+        </button>
+      </div>
+      <div class="fulltext__panel fulltext__panel--summary" aria-label="요약">
+        <header class="fulltext__head">
+          <h2 class="fulltext__title">16세에 5개 국어(영어, 힌디어, 프랑스어, 스페인어, 산스크리트어)와 다양한 영어 억양을 마스터한 작가(Nitisha Shankar)가 자신의 언어 학습 여정을 바꿔놓은 '5가지 매일의 습관'을 소개하는 내용입니다.</h2>
+          <div class="fulltext__spacer"></div>
+        </header>
+        <div class="fulltext__body">
+          <div class="fulltext__scroll summary" id="summaryScroll">
+            <section class="summary__item">
+              <h3>1. 매일 하루도 빠짐없이 듣기</h3>
+              <p>단어장을 기계적으로 외우는 대신, 팟캐스트나 인터뷰, 영화 등을 자막 없이 듣는 것을 추천합니다. 단순히 듣는 것에 그치지 않고 대사를 소리 내어 따라 하고, 화자의 발음과 억양을 모방하는 '능동적인 듣기'를 해야 언어의 리듬과 패턴을 자연스럽게 체화할 수 있습니다.</p>
+            </section>
+            <section class="summary__item">
+              <h3>2. 첫날부터 말하기</h3>
+              <p>'유창해질 때까지' 기다리지 말고 언어를 배우기 시작한 첫날부터 당장 아는 단어라도 소리 내어 말해야 합니다. 아는 표현이 적더라도 일상생활의 대화에 섞어서 사용해 보고, 모국어로 번역해서 생각하기보다는 그 언어 자체로 생각하려는 습관을 들이는 것이 중요합니다.</p>
+            </section>
+          </div>
+          <div class="fulltext__fade" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Figma 67:1381 — 온보딩 (시작 화면 전에 표시, 버튼을 누르면 로고가 Wellow 버튼 자리로 들어가며 본 화면으로) -->
+    <section class="onboarding" id="onboarding" data-step="1" aria-label="Wellow 시작하기">
+      <div class="onboarding__status" aria-hidden="true">
+        <span class="onboarding__time">9:41</span>
+        <span class="onboarding__icons">
+          <img src="assets/interaction/cellular-blue.svg" width="18" height="12" alt="" />
+          <img src="assets/interaction/wifi-blue.svg" width="16" height="12" alt="" />
+          <img src="assets/interaction/battery-blue.svg" width="25" height="12" alt="" />
+        </span>
+      </div>
+      <div class="onboarding__pages">
+      <div class="onboarding__page" data-step="1">
+        <div class="onboarding__main">
+          <div class="onboarding__intro">
+            <img class="onboarding__logo" src="assets/interaction/logo-onboarding.svg" width="66" height="66" alt="Wellow" />
+            <p class="onboarding__lead">Look up any word, instantly, without leaving what you're reading.</p>
+            <h1 class="onboarding__title">Welcome to Wellow</h1>
+          </div>
+          <div class="onboarding__card-wrap">
+            <div class="onboarding__card">
+              <p class="onboarding__badge">Required permission</p>
+              <div class="onboarding__body">
+                <p class="onboarding__name">Display Over Other Apps</p>
+                <p class="onboarding__desc">Wellow needs to appear on top of whatever you're reading — inside Safari, Kindle, News, or any other app.</p>
+                <div class="onboarding__note">
+                  <img src="assets/interaction/info.svg" width="16" height="16" alt="" />
+                  <p>iOS will open Settings. Tap "Allow display over other apps" then return here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="onboarding__actions">
+          <button class="onboarding__btn onboarding__btn--primary" type="button" data-onboard="grant"><span class="onboarding__btn-label">Grant Permission in Settings</span></button>
+          <button class="onboarding__btn onboarding__btn--ghost" type="button" data-onboard="skip">Skip for now</button>
+          <div class="onboarding__dots" aria-hidden="true"><span class="is-on"></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <!-- Figma 67:1528 — 온보딩 2: 원문 언어 (Save 로 다음 단계) -->
+      <div class="onboarding__page onboarding__page--lang" data-step="2" aria-hidden="true">
+        <div class="onboarding__main onboarding__main--lang">
+          <div class="ob-lang__head">
+            <h2 class="onboarding__title onboarding__title--lang">Select language : From</h2>
+            <p class="ob-lang__sub">Select the language for Wellow to recognize</p>
+          </div>
+          <div class="ob-lang__list" role="listbox" aria-label="원문 언어">
+            <span class="ob-lang__slider" aria-hidden="true"></span>
+            <button class="ob-lang__opt is-selected" type="button" role="option" aria-selected="true">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Auto</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">English (US)</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">English (UK)</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Español</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Français</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Deutsch</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text is-cjk">日本語</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text is-cjk">한국어</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text is-cjk">中文</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+          </div>
+        </div>
+        <div class="onboarding__actions onboarding__actions--lang">
+          <button class="onboarding__btn onboarding__btn--primary" type="button" data-onboard="save-from"><span class="onboarding__btn-label">Save</span></button>
+          <div class="onboarding__dots onboarding__dots--lang" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <!-- Figma 67:1582 — 온보딩 3: 번역 언어 (Save 로 다음 단계) -->
+      <div class="onboarding__page onboarding__page--lang" data-step="3" aria-hidden="true">
+        <div class="onboarding__main onboarding__main--lang">
+          <div class="ob-lang__head">
+            <h2 class="onboarding__title onboarding__title--lang">Select language : To</h2>
+            <p class="ob-lang__sub">Select the language for Wellow to translate into</p>
+          </div>
+          <div class="ob-lang__list" role="listbox" aria-label="번역 언어">
+            <span class="ob-lang__slider" aria-hidden="true"></span>
+            <button class="ob-lang__opt is-selected" type="button" role="option" aria-selected="true">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Auto</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">English (US)</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">English (UK)</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Español</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Français</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text">Deutsch</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text is-cjk">日本語</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text is-cjk">한국어</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+            <button class="ob-lang__opt" type="button" role="option" aria-selected="false">
+              <img class="ob-lang__icon ob-lang__icon--left" src="assets/interaction/lang-icon.svg" alt="" />
+              <span class="ob-lang__text is-cjk">中文</span>
+              <span class="ob-lang__space"></span>
+              <img class="ob-lang__icon" src="assets/interaction/lang-icon-right.svg" alt="" />
+            </button>
+          </div>
+        </div>
+        <div class="onboarding__actions onboarding__actions--lang">
+          <button class="onboarding__btn onboarding__btn--primary" type="button" data-onboard="save-to"><span class="onboarding__btn-label">Save</span></button>
+          <div class="onboarding__dots onboarding__dots--lang" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <!-- Figma 67:1423 · 67:1458 · 67:1493 — 온보딩 4: Dock 위치 안내 (작은 화면 속 Dock 이 세 자리로 움직이며 반복) -->
+      <div class="onboarding__page onboarding__page--dock" data-step="4" aria-hidden="true">
+        <div class="onboarding__main onboarding__main--lang">
+          <div class="ob-lang__head">
+            <h2 class="onboarding__title onboarding__title--lang">Move the Dock around</h2>
+            <p class="ob-lang__sub">You can drag it to any location you prefer.</p>
+          </div>
+          <div class="ob-dock">
+            <div class="ob-dock__phone" aria-hidden="true">
+              <div class="ob-dock__bar"><span></span></div>
+              <div class="ob-dock__screen">
+                <span style="width: 76px"></span>
+                <span style="width: 89px"></span>
+                <span style="width: 76px"></span>
+                <span style="width: 95px"></span>
+                <span style="width: 70px"></span>
+                <i class="ob-dock__dock"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="onboarding__actions onboarding__actions--lang">
+          <button class="onboarding__btn onboarding__btn--primary" type="button" data-onboard="start"><span class="onboarding__btn-label">Get started <span class="ob-dock__arrow">→</span></span></button>
+          <div class="onboarding__dots onboarding__dots--lang" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      </div>
+      <!-- Figma 206:1970 — 중간 로딩 (Get started 뒤): WE · 로고 원 · Follow -->
+      <div class="ob-loader" aria-hidden="true">
+        <div class="ob-loader__word"><span>WE</span></div>
+        <div class="ob-loader__circle">
+          <span class="ob-loader__face"><img class="ob-loader__logo" src="assets/interaction/logo-loader.svg" width="36" height="36" alt="" /></span>
+        </div>
+        <div class="ob-loader__word"><span>Follow</span></div>
+      </div>
+      <!-- 진행 점: 페이지 위에 따로 떠 있음 (페이지가 바뀌어도 사라지지 않고 파란 점만 넘어감) -->
+      <div class="onboarding__progress" aria-hidden="true"><span class="is-on"></span><span></span><span></span><span></span></div>
+    </section>
+
+    <!-- 59:821 action bar -->
+    <div class="toolbar">
+      <img src="assets/interaction/toolbar.png" alt="" draggable="false" />
+    </div>
+  </main>
+  </div>
+
+  <script src="js/interaction-dict.js?v=4"></script>
+  <script src="js/interaction.js?v=95"></script>
+</body>
+</html>
