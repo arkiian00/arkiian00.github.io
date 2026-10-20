@@ -64,8 +64,13 @@
   // 한 지점 뒤의 밝기 (컴포넌트 자신·그 안쪽은 건너뜀)
   function lumAt(bar, x, y) {
     if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return null;
+    // 푸터(#foot)는 pointer-events: none 이라 hit test 에 안 잡힘 → 이 지점을 덮고 있으면 그 배경색으로 (Next 목록 #nextGroup 은 푸터 위)
+    const foot = document.getElementById("foot"), ff = foot && !foot.hidden && document.getElementById("footFrame");
+    const fb = ff && ff.getBoundingClientRect();
+    const onFoot = fb && x >= fb.left && x < fb.right && y >= fb.top && y < fb.bottom;
     for (const el of document.elementsFromPoint(x, y)) {
       if (bar.contains(el) || el.closest(SEL)) continue;
+      if (onFoot && !el.closest("#nextGroup")) { const c = parse(getComputedStyle(ff).backgroundColor); if (c && c.a > 0.5) return lum(c.r, c.g, c.b); }
       if (el.tagName === "IMG") {
         const p = imgPixel(el, x, y);
         if (p && p.a > 0.5) return lum(p.r, p.g, p.b);
