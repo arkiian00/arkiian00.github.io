@@ -20,7 +20,7 @@
     wello: { page: "wello.html", bg: "#faf4ea", img: "assets/wello/cover.webp", title: "Wellow", color: "#000" },
     framer: { page: "framer.html", bg: "#ffffff", img: "assets/framer/hero.jpg", title: "Framer", color: "#000" },
     northface: { page: "northface.html", bg: "#2c2c2c", img: "assets/northface/hero.jpg", title: "The North Face Rebranding", color: "#fff" },   // Figma 232:3596
-    realworld: { page: "realworld.html", bg: "#fbb5bd", img: "assets/card-realworld.jpg", title: "RealWorld X Catch Teenieping", color: "#fff", lock: true },   // Figma 214:739 · 기업 협업 — 비밀번호로 잠금 (js/lock.js)
+    realworld: { page: "realworld.html", bg: "#fbb5bd", img: "assets/realworld/hero.jpg", title: "RealWorld X Catch Teenieping", color: "#fff", lock: true },   // Figma 214:739 · 기업 협업 — 비밀번호로 잠금 (js/lock.js)
   };
   const loadFill = load.querySelector(".load__fill");
   const loadBar = load.querySelector(".load__bar");

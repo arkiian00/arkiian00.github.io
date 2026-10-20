@@ -12,6 +12,7 @@
  *  주의: 브라우저 안에서 확인하는 잠금이라 진짜 보안은 아님 (페이지 파일 자체는 서버에서 그대로 받을 수 있음)
  */
 (() => {
+  const PASSWORD = "lia";
   const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
   const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const bez = (x1, y1, x2, y2) => (t) => {
@@ -75,9 +76,9 @@
           <div class="lockgate__neck" data-n="h"></div>
         </div>
         <div class="lockgate__bar is-liquid" data-bar="top"><span class="lockgate__label"><span class="roll" data-dir="-1"><span class="roll__w roll__old"></span><span class="roll__w roll__new"></span></span></span></div>
-        <button class="lockgate__bar is-liquid" type="button" data-bar="bot" aria-label="NDA 안내">
+        <button class="lockgate__bar is-liquid" type="button" data-bar="bot" aria-label="비밀번호 입력">
           <span class="lockgate__label"><span class="roll" data-dir="1"><span class="roll__w roll__old"></span><span class="roll__w roll__new"><span class="lockgate__lock" aria-hidden="true"></span></span></span></span>
-          <input class="lockgate__input" type="text" readonly autocomplete="off" spellcheck="false" value="NDA · on request" aria-label="Under NDA, available on request" tabindex="-1">
+          <input class="lockgate__input" type="password" autocomplete="off" spellcheck="false" placeholder="Password" aria-label="비밀번호" tabindex="-1">
         </button>
         <a class="lockgate__bub is-liquid" href="#back" aria-label="프로젝트 목록으로"><span class="lockgate__arrow"><span class="lockgate__ico"></span></span></a>
       </div>`;
@@ -221,14 +222,14 @@
       if (!g.ready || g.busy) return;
       g.bot.classList.add("is-typing");
       g.input.tabIndex = 0;
-      g.input.value = "NDA · on request";
+      g.input.value = "";
       g.input.focus();
     });
     g.input.addEventListener("keydown", (e) => {
       if (e.key === "Escape") { g.bot.classList.remove("is-typing"); g.input.blur(); return; }
       if (e.key !== "Enter") return;
       e.preventDefault();
-      if (false) {
+      if (g.input.value.trim().toLowerCase() === PASSWORD) {
         g.busy = true;
         g.input.blur();
         g.bot.classList.add("is-open");
@@ -236,7 +237,7 @@
       } else {
         g.bot.animate([{ translate: "0 0" }, { translate: "-8px 0" }, { translate: "7px 0" }, { translate: "-4px 0" }, { translate: "0 0" }],
           { duration: 380, easing: "ease-out" });
-        g.input.value = "NDA · on request";
+        g.input.value = "";
       }
     });
     // 화살표 → 프로젝트 목록
